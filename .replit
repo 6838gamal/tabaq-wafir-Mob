@@ -5,3 +5,28 @@ channel = "stable-25_05"
 
 [agent]
 expertMode = true
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Restaurant Copilot"
+
+[[workflows.workflow]]
+name = "Restaurant Copilot"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "flutter build web --release --no-pub && cd build/web && python3 -m http.server 5000"
+waitForPort = 5000
+
+[[ports]]
+localPort = 5000
+externalPort = 80
