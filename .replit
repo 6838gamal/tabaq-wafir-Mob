@@ -22,9 +22,12 @@ args = "Restaurant Copilot"
 name = "Restaurant Copilot"
 author = "agent"
 
+[workflows.workflow.metadata]
+outputType = "webview"
+
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "flutter build web --release --no-pub && cd build/web && python3 -m http.server 5000"
+args = "flutter build web --release --no-pub && serve build/web -l 5000"
 waitForPort = 5000
 
 [[ports]]

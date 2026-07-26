@@ -1,69 +1,38 @@
 # Restaurant Copilot
 
-**Restaurant Operating Intelligence Platform** — A comprehensive Flutter application for managing restaurants, built with Clean Architecture and Material Design 3.
+A Flutter-based Restaurant Operating Intelligence Platform — helping restaurant owners, managers, and staff with daily operations, waste reduction, and profit optimization.
 
 ## Stack
 
-- **Framework**: Flutter 3.32 (Dart 3.8)
-- **State Management**: Riverpod
+- **Framework**: Flutter (Dart) — targets Web, Android, iOS
+- **State Management**: Riverpod (with code generation)
 - **Navigation**: GoRouter
 - **Networking**: Dio
-- **Local Storage**: Hive, SharedPreferences, FlutterSecureStorage
-- **UI**: Material 3, Google Fonts, fl_chart, Lottie
-- **Localization**: easy_localization (Arabic + English, RTL/LTR)
+- **Local Storage**: Hive, SQLite (sqflite), Flutter Secure Storage
+- **UI**: Material 3, Google Fonts, fl_chart, Lottie animations, Responsive Framework
+- **Localization**: Easy Localization (English + Arabic)
+- **Architecture**: Clean Architecture, Feature-First, Repository Pattern
 
-## Running the App
+## Features
 
-```bash
-flutter run -d web-server --web-port 5000 --web-hostname 0.0.0.0
-```
-
-Or use the configured workflow.
-
-## Architecture
-
-```
-lib/
-  core/            # Shared infrastructure
-    constants/     # App-wide constants
-    errors/        # Failure types
-    network/       # Dio API client
-    router/        # GoRouter configuration
-    theme/         # Material 3 theme (light/dark)
-    widgets/       # Shared UI components
-  features/        # Feature-first modules
-    auth/          # Login, OTP, forgot password, splash
-    dashboard/     # KPI overview, charts
-    copilot/       # AI-powered operations center
-    alerts/        # Smart alerts system
-    orders/        # Order management (dine-in, delivery, pickup)
-    kitchen/       # Kitchen display system
-    inventory/     # Stock, products, waste management
-    reservations/  # Booking & waitlist
-    customers/     # CRM, reviews, complaints
-    employees/     # Staff, attendance, schedule, payroll
-    accounting/    # Invoices, expenses, P&L
-    reports/       # Analytics & reporting
-    ai_assistant/  # AI chat interface
-    settings/      # Profile, theme, language, security
-  l10n/            # Translation files
-assets/
-  translations/    # en.json, ar.json
-```
+Auth (login, OTP, forgot password), Dashboard, Orders, Inventory (products, stock count, waste), Kitchen display, Reservations, Customers, Employees, Accounting, Reports, AI Assistant, Alerts, Notifications, Settings
 
 ## User Roles
 
-Owner · Branch Manager · Supervisor · Cashier · Kitchen · Waiter · Inventory Manager · Accountant
+Owner, Branch Manager, Supervisor, Cashier, Kitchen, Waiter, Inventory Manager, Accountant
 
-Each role sees its own tailored UI (access control wired to backend).
+## How to Run
 
-## Backend
+The workflow `Restaurant Copilot` builds and serves the web app:
 
-FastAPI backend expected at `https://api.restaurantcopilot.com/v1` — configure in `lib/core/constants/app_constants.dart`. All features currently use rich mock data for web preview.
+```
+flutter build web --release --no-pub && serve build/web -l 5000
+```
+
+The built output is served on port 5000.
+
+**Note**: The app references a FastAPI backend that is not included in this repository. API calls will fail without a running backend.
 
 ## User Preferences
 
-- Keep Clean Architecture + Feature-First folder structure
-- Arabic RTL and English LTR both supported; do not hardcode directionality
-- Dark mode, light mode, and system mode all supported — test both
-- No Firebase — all auth/data goes through FastAPI backend
+_None recorded yet._
