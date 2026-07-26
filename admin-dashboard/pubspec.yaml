@@ -1,0 +1,14 @@
+name: restaurant_admin_dashboard
+description: Platform administration dashboard for Restaurant Ecosystem Platform.
+publish_to: none
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.3.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true

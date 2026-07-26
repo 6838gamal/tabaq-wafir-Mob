@@ -14,30 +14,33 @@ abstract class AuthRepository {
 
 class AuthRepositoryImpl implements AuthRepository {
   final TokenManager _tokenManager;
-  late final GoogleSignIn _googleSignIn;
+  final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
+  bool _googleInitialized = false;
 
-  AuthRepositoryImpl(this._tokenManager) {
-    _googleSignIn = GoogleSignIn(
-      clientId: AppConstants.googleClientId.isNotEmpty
-          ? AppConstants.googleClientId
-          : null,
-      scopes: ['email', 'profile'],
-    );
-  }
+  AuthRepositoryImpl(this._tokenManager);
 
   @override
   Future<UserModel?> signInWithGoogle() async {
     try {
-      final account = await _googleSignIn.signIn();
-      if (account == null) return null;
+      if (!_googleInitialized) {
+        await _googleSignIn.initialize(
+          clientId: AppConstants.googleClientId.isNotEmpty
+              ? AppConstants.googleClientId
+              : null,
+        );
+        _googleInitialized = true;
+      }
+
+      final account = await _googleSignIn.authenticate(
+        scopeHint: const ['email', 'profile'],
+      );
 
       final auth = await account.authentication;
-      final token = auth.idToken ?? auth.accessToken ?? '';
+      final token = auth.idToken ?? '';
 
       // Save tokens
       await _tokenManager.saveTokens(
         accessToken: token,
-        refreshToken: auth.accessToken,
       );
 
       final user = UserModel(

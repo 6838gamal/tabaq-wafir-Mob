@@ -1,0 +1,1 @@
+"""Shared Restaurant Ecosystem Platform API."""
