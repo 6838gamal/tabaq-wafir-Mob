@@ -1,4 +1,16 @@
-# Restaurant Copilot
+# Restaurant Ecosystem Platform
+
+The repository is organized as five top-level product/service folders:
+
+- `restaurant-app` — the existing Flutter restaurant operations application
+- `customer-app` — customer-facing application workspace
+- `driver-app` — delivery driver application workspace
+- `admin-dashboard` — platform administration dashboard workspace
+- `backend` — shared backend/API workspace and architecture documentation
+
+Only deployment and repository configuration files remain at the root.
+
+## Restaurant App
 
 A Flutter-based Restaurant Operating Intelligence Platform — helping restaurant owners, managers, and staff with daily operations, waste reduction, and profit optimization.
 
@@ -23,15 +35,15 @@ Owner, Branch Manager, Supervisor, Cashier, Kitchen, Waiter, Inventory Manager, 
 
 ## How to Run
 
-The workflow `Restaurant Copilot` builds and serves the web app:
+The `Restaurant Copilot` workflow builds and serves the restaurant app:
 
 ```
-flutter build web --release --no-pub && serve build/web -l 5000
+cd restaurant-app && flutter build web --release --no-pub && serve build/web -l 5000
 ```
 
 The built output is served on port 5000.
 
-**Note**: The app references a FastAPI backend that is not included in this repository. API calls will fail without a running backend.
+**Note**: The app references a FastAPI backend. The backend workspace is reserved in `backend/`, but its service implementation is not included in this imported project yet.
 
 ## User Preferences
 

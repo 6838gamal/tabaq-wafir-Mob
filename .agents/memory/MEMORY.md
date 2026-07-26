@@ -1,0 +1,1 @@
+- [Flutter monorepo workflow](flutter-monorepo-workflow.md) — run Flutter workflows from the app directory and resolve dependencies there after relocation.
