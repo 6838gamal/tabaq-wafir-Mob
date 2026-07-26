@@ -1,0 +1,11 @@
+[build]
+  command = "flutter build web"
+  base    = "."
+  publish = "build/web"
+  environment = { SECRETS_SCAN_ENABLED = "false" }
+
+
+[[redirects]]
+  from   = "/*"
+  to     = "/index.html"
+  status = 200
