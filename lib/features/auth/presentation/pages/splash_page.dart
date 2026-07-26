@@ -1,26 +1,38 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:animate_do/animate_do.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../providers/auth_provider.dart';
 
-class SplashPage extends StatefulWidget {
+class SplashPage extends ConsumerStatefulWidget {
   const SplashPage({super.key});
 
   @override
-  State<SplashPage> createState() => _SplashPageState();
+  ConsumerState<SplashPage> createState() => _SplashPageState();
 }
 
-class _SplashPageState extends State<SplashPage> {
+class _SplashPageState extends ConsumerState<SplashPage> {
   @override
   void initState() {
     super.initState();
-    _navigate();
+    _init();
   }
 
-  Future<void> _navigate() async {
-    await Future.delayed(const Duration(milliseconds: 2500));
-    if (mounted) context.go(AppRoutes.login);
+  Future<void> _init() async {
+    // Brief branding delay then check session
+    await Future.delayed(const Duration(milliseconds: 1800));
+    if (!mounted) return;
+    await ref.read(authProvider.notifier).checkSession();
+    if (!mounted) return;
+
+    final status = ref.read(authProvider).status;
+    if (status == AuthStatus.authenticated) {
+      context.go(AppRoutes.dashboard);
+    } else {
+      context.go(AppRoutes.login);
+    }
   }
 
   @override
@@ -79,13 +91,12 @@ class _SplashPageState extends State<SplashPage> {
                     style: TextStyle(
                       color: Colors.white.withOpacity(0.8),
                       fontSize: 14,
-                      fontWeight: FontWeight.w400,
                     ),
                   ),
                 ),
                 const SizedBox(height: 80),
                 FadeIn(
-                  delay: const Duration(milliseconds: 1000),
+                  delay: const Duration(milliseconds: 900),
                   child: const SizedBox(
                     width: 32,
                     height: 32,

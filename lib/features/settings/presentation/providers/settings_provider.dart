@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/constants/app_constants.dart';
+import '../../../../l10n/app_l10n.dart';
 
-// ── Theme ──────────────────────────────────────────────
+// ── Theme ────────────────────────────────────────────────────────────────────
+
 final themeModeProvider = StateNotifierProvider<ThemeModeNotifier, ThemeMode>(
   (ref) => ThemeModeNotifier(),
 );
@@ -28,7 +30,28 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
   }
 }
 
-// ── Auth State ─────────────────────────────────────────
-final isLoggedInProvider = StateProvider<bool>((ref) => false);
+// ── Locale ───────────────────────────────────────────────────────────────────
 
-final currentUserRoleProvider = StateProvider<String>((ref) => 'owner');
+final localeModeProvider = StateNotifierProvider<LocaleNotifier, Locale>(
+  (ref) => LocaleNotifier(),
+);
+
+class LocaleNotifier extends StateNotifier<Locale> {
+  LocaleNotifier() : super(const Locale('en')) {
+    _load();
+  }
+
+  Future<void> _load() async {
+    final prefs = await SharedPreferences.getInstance();
+    final lang = prefs.getString(AppConstants.languageKey) ?? 'en';
+    state = Locale(lang);
+    AppTranslations.setLocale(lang);
+  }
+
+  Future<void> setLocale(String languageCode) async {
+    state = Locale(languageCode);
+    AppTranslations.setLocale(languageCode);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(AppConstants.languageKey, languageCode);
+  }
+}

@@ -242,18 +242,6 @@
       "languageVersion": "3.3"
     },
     {
-      "name": "easy_localization",
-      "rootUri": "file:///home/runner/.pub-cache/hosted/pub.dev/easy_localization-3.0.8",
-      "packageUri": "lib/",
-      "languageVersion": "2.12"
-    },
-    {
-      "name": "easy_logger",
-      "rootUri": "file:///home/runner/.pub-cache/hosted/pub.dev/easy_logger-0.0.2",
-      "packageUri": "lib/",
-      "languageVersion": "2.12"
-    },
-    {
       "name": "equatable",
       "rootUri": "file:///home/runner/.pub-cache/hosted/pub.dev/equatable-2.1.0",
       "packageUri": "lib/",
@@ -442,6 +430,42 @@
     {
       "name": "google_fonts",
       "rootUri": "file:///home/runner/.pub-cache/hosted/pub.dev/google_fonts-6.3.2",
+      "packageUri": "lib/",
+      "languageVersion": "3.7"
+    },
+    {
+      "name": "google_identity_services_web",
+      "rootUri": "file:///home/runner/.pub-cache/hosted/pub.dev/google_identity_services_web-0.3.3+1",
+      "packageUri": "lib/",
+      "languageVersion": "3.4"
+    },
+    {
+      "name": "google_sign_in",
+      "rootUri": "file:///home/runner/.pub-cache/hosted/pub.dev/google_sign_in-7.2.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.7"
+    },
+    {
+      "name": "google_sign_in_android",
+      "rootUri": "file:///home/runner/.pub-cache/hosted/pub.dev/google_sign_in_android-7.2.1",
+      "packageUri": "lib/",
+      "languageVersion": "3.7"
+    },
+    {
+      "name": "google_sign_in_ios",
+      "rootUri": "file:///home/runner/.pub-cache/hosted/pub.dev/google_sign_in_ios-6.2.1",
+      "packageUri": "lib/",
+      "languageVersion": "3.7"
+    },
+    {
+      "name": "google_sign_in_platform_interface",
+      "rootUri": "file:///home/runner/.pub-cache/hosted/pub.dev/google_sign_in_platform_interface-3.1.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.7"
+    },
+    {
+      "name": "google_sign_in_web",
+      "rootUri": "file:///home/runner/.pub-cache/hosted/pub.dev/google_sign_in_web-1.1.0",
       "packageUri": "lib/",
       "languageVersion": "3.7"
     },

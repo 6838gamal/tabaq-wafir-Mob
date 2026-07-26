@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:easy_localization/easy_localization.dart';
+import '../../../../core/constants/app_constants.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../l10n/app_l10n.dart';
+import '../../../../features/auth/presentation/providers/auth_provider.dart';
 import '../providers/settings_provider.dart';
 
 class SettingsPage extends ConsumerWidget {
@@ -11,53 +13,112 @@ class SettingsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
     final themeMode = ref.watch(themeModeProvider);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final locale = ref.watch(localeModeProvider);
+    final user = ref.watch(currentUserProvider);
 
     return Scaffold(
-      appBar: AppBar(title: Text('settings.title'.tr())),
+      appBar: AppBar(title: Text(l10n.settingsTitle)),
       body: ListView(
-        padding: const EdgeInsets.all(16),
         children: [
-          // Profile card
-          _buildProfileCard(context, isDark),
-          const SizedBox(height: 20),
+          // Profile section
+          _SectionHeader(l10n.settingsProfile),
+          _ProfileCard(
+            name: user?.name ?? '—',
+            email: user?.email ?? '—',
+            role: user?.role.displayName ?? '—',
+            photoUrl: user?.photoUrl,
+            onTap: () => context.push(AppRoutes.profile),
+          ),
 
-          _sectionLabel('Preferences', isDark),
-          _settingTile(context, Icons.language_outlined, 'settings.language'.tr(), _langSub(context), AppColors.kpiBlue, isDark, onTap: () => _showLanguageSheet(context, ref)),
-          _settingTile(context, Icons.palette_outlined, 'settings.theme'.tr(), _themeSub(themeMode), AppColors.kpiPurple, isDark, onTap: () => _showThemeSheet(context, ref, themeMode)),
-          _settingTile(context, Icons.notifications_outlined, 'settings.notifications'.tr(), 'Push, Local, In-App', AppColors.kpiOrange, isDark, onTap: () {}),
+          // Restaurant
+          _SectionHeader(l10n.settingsRestaurantInfo),
+          _SettingsTile(
+            icon: Icons.restaurant_outlined,
+            title: l10n.settingsRestaurantInfo,
+            subtitle: 'Configure your restaurant details',
+            onTap: () {},
+          ),
+          _SettingsTile(
+            icon: Icons.store_outlined,
+            title: l10n.settingsBranches,
+            onTap: () => context.push(AppRoutes.branches),
+          ),
 
-          const SizedBox(height: 16),
-          _sectionLabel('Security', isDark),
-          _settingTile(context, Icons.fingerprint, 'settings.biometric'.tr(), 'Enabled', AppColors.success, isDark, onTap: () {}),
-          _settingTile(context, Icons.lock_outline, 'settings.change_password'.tr(), null, AppColors.kpiBlue, isDark, onTap: () {}),
-          _settingTile(context, Icons.timer_outlined, 'settings.session_timeout'.tr(), '30 minutes', AppColors.warning, isDark, onTap: () {}),
+          // Appearance
+          _SectionHeader(l10n.settingsTheme),
+          _ThemeSelector(current: themeMode, ref: ref),
 
-          const SizedBox(height: 16),
-          _sectionLabel('Business', isDark),
-          _settingTile(context, Icons.store_outlined, 'settings.branches'.tr(), '2 branches', AppColors.kpiGreen, isDark, onTap: () {}),
-          _settingTile(context, Icons.person_outline, 'settings.profile'.tr(), null, AppColors.kpiBlue, isDark, onTap: () => context.go(AppRoutes.profile)),
+          // Language
+          _SectionHeader(l10n.settingsLanguage),
+          _LanguageSelector(current: locale.languageCode, ref: ref),
 
-          const SizedBox(height: 16),
-          _sectionLabel('Logs & Support', isDark),
-          _settingTile(context, Icons.history, 'settings.activity_log'.tr(), null, AppColors.kpiTeal, isDark, onTap: () => context.go(AppRoutes.activityLog)),
-          _settingTile(context, Icons.manage_search_outlined, 'settings.audit_log'.tr(), null, AppColors.kpiPurple, isDark, onTap: () {}),
-          _settingTile(context, Icons.help_outline, 'settings.help'.tr(), null, AppColors.info, isDark, onTap: () {}),
-          _settingTile(context, Icons.chat_outlined, 'settings.whatsapp'.tr(), 'Chat support', AppColors.success, isDark, onTap: () {}),
+          // Notifications & Security
+          _SectionHeader('${l10n.settingsNotifications} & ${l10n.settingsSecurity}'),
+          _SettingsTile(
+            icon: Icons.notifications_outlined,
+            title: l10n.settingsNotifications,
+            trailing: Switch(
+              value: true,
+              onChanged: (_) {},
+            ),
+          ),
+          _SettingsTile(
+            icon: Icons.security_outlined,
+            title: l10n.settingsSecurity,
+            onTap: () {},
+          ),
+          _SettingsTile(
+            icon: Icons.privacy_tip_outlined,
+            title: l10n.settingsPrivacy,
+            onTap: () {},
+          ),
 
-          const SizedBox(height: 16),
-          _sectionLabel('App', isDark),
-          _settingTile(context, Icons.info_outline, 'settings.about'.tr(), 'Version 1.0.0', AppColors.textSecondaryLight, isDark, onTap: () {}),
+          // Logs
+          _SectionHeader('Logs'),
+          _SettingsTile(
+            icon: Icons.history_outlined,
+            title: l10n.settingsActivityLog,
+            onTap: () => context.push(AppRoutes.activityLog),
+          ),
+          _SettingsTile(
+            icon: Icons.manage_search_outlined,
+            title: l10n.settingsAuditLog,
+            onTap: () => context.push(AppRoutes.auditLogs),
+          ),
+
+          // Support
+          _SectionHeader(l10n.settingsSupport),
+          _SettingsTile(
+            icon: Icons.help_outline,
+            title: l10n.settingsSupport,
+            onTap: () {},
+          ),
+          _SettingsTile(
+            icon: Icons.info_outline,
+            title: l10n.settingsAbout,
+            subtitle: '${l10n.settingsVersion} ${AppConstants.appVersion}',
+            onTap: () {},
+          ),
 
           const SizedBox(height: 24),
-          OutlinedButton.icon(
-            onPressed: () => context.go(AppRoutes.login),
-            icon: const Icon(Icons.logout, size: 18, color: AppColors.error),
-            label: Text('settings.logout'.tr(), style: const TextStyle(color: AppColors.error)),
-            style: OutlinedButton.styleFrom(
-              side: const BorderSide(color: AppColors.error),
-              minimumSize: const Size(double.infinity, 48),
+
+          // Logout
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: OutlinedButton.icon(
+              icon: const Icon(Icons.logout, color: AppColors.error),
+              label: Text(l10n.settingsLogout,
+                  style: const TextStyle(color: AppColors.error)),
+              style: OutlinedButton.styleFrom(
+                side: const BorderSide(color: AppColors.error),
+                minimumSize: const Size(double.infinity, 50),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+              ),
+              onPressed: () => _confirmSignOut(context, ref, l10n),
             ),
           ),
           const SizedBox(height: 32),
@@ -66,104 +127,279 @@ class SettingsPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildProfileCard(BuildContext context, bool isDark) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: AppColors.primaryGradient,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(children: [
-        Container(
-          width: 56, height: 56,
-          decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), shape: BoxShape.circle),
-          alignment: Alignment.center,
-          child: const Text('A', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w700)),
-        ),
-        const SizedBox(width: 16),
-        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const Text('Ahmed Al-Rashidi', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 16)),
-          const SizedBox(height: 4),
-          const Text('roles.owner', style: TextStyle(color: Colors.white70, fontSize: 13)).tr(),
-          const SizedBox(height: 2),
-          const Text('admin@restaurant.com', style: TextStyle(color: Colors.white60, fontSize: 12)),
-        ])),
-        IconButton(
-          icon: const Icon(Icons.edit_outlined, color: Colors.white70),
-          onPressed: () => context.go(AppRoutes.profile),
-        ),
-      ]),
-    );
-  }
-
-  Widget _sectionLabel(String label, bool isDark) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8, left: 4),
-      child: Text(label.toUpperCase(), style: TextStyle(
-        fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 0.8,
-        color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
-      )),
-    );
-  }
-
-  Widget _settingTile(BuildContext context, IconData icon, String title, String? subtitle, Color iconColor, bool isDark, {required VoidCallback onTap}) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 6),
-      decoration: BoxDecoration(
-        color: isDark ? AppColors.cardDark : AppColors.cardLight,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: isDark ? AppColors.borderDark : AppColors.borderLight),
-      ),
-      child: ListTile(
-        leading: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(color: iconColor.withOpacity(0.12), borderRadius: BorderRadius.circular(8)),
-          child: Icon(icon, color: iconColor, size: 18),
-        ),
-        title: Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
-        subtitle: subtitle != null ? Text(subtitle, style: const TextStyle(fontSize: 12)) : null,
-        trailing: Icon(Icons.chevron_right, size: 18, color: isDark ? AppColors.iconDark : AppColors.iconLight),
-        onTap: onTap,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
+  Future<void> _confirmSignOut(
+      BuildContext context, WidgetRef ref, AppLocalizations l10n) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.settingsLogout),
+        content: Text(l10n.settingsLogoutConfirm),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text(l10n.commonCancel)),
+          ElevatedButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              style:
+                  ElevatedButton.styleFrom(backgroundColor: AppColors.error),
+              child: Text(l10n.settingsLogout)),
+        ],
       ),
     );
-  }
-
-  String _langSub(BuildContext context) => context.locale.languageCode == 'ar' ? 'العربية' : 'English';
-
-  String _themeSub(ThemeMode mode) {
-    switch (mode) {
-      case ThemeMode.dark: return 'Dark';
-      case ThemeMode.light: return 'Light';
-      default: return 'System';
+    if (confirmed == true && context.mounted) {
+      await ref.read(authProvider.notifier).signOut();
+      if (context.mounted) context.go(AppRoutes.login);
     }
   }
+}
 
-  void _showLanguageSheet(BuildContext context, WidgetRef ref) {
-    showModalBottomSheet(context: context, builder: (ctx) => Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(mainAxisSize: MainAxisSize.min, children: [
-        Text('settings.language'.tr(), style: Theme.of(ctx).textTheme.titleLarge),
-        const SizedBox(height: 16),
-        ListTile(title: const Text('English'), leading: const Icon(Icons.language), onTap: () { context.setLocale(const Locale('en')); Navigator.pop(ctx); }),
-        ListTile(title: const Text('العربية'), leading: const Icon(Icons.language), onTap: () { context.setLocale(const Locale('ar')); Navigator.pop(ctx); }),
-      ]),
-    ));
+// ─── Subwidgets ──────────────────────────────────────────────────────────────
+
+class _SectionHeader extends StatelessWidget {
+  final String title;
+  const _SectionHeader(this.title);
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 20, 16, 6),
+      child: Text(
+        title.toUpperCase(),
+        style: theme.textTheme.labelSmall?.copyWith(
+          letterSpacing: 0.8,
+          fontWeight: FontWeight.w600,
+          color: isDark
+              ? AppColors.textSecondaryDark
+              : AppColors.textSecondaryLight,
+        ),
+      ),
+    );
   }
+}
 
-  void _showThemeSheet(BuildContext context, WidgetRef ref, ThemeMode current) {
-    showModalBottomSheet(context: context, builder: (ctx) => Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(mainAxisSize: MainAxisSize.min, children: [
-        Text('settings.theme'.tr(), style: Theme.of(ctx).textTheme.titleLarge),
-        const SizedBox(height: 16),
-        ...ThemeMode.values.map((m) => ListTile(
-          title: Text(m.name[0].toUpperCase() + m.name.substring(1)),
-          leading: Icon(m == ThemeMode.dark ? Icons.dark_mode_outlined : m == ThemeMode.light ? Icons.light_mode_outlined : Icons.brightness_auto_outlined),
-          trailing: m == current ? const Icon(Icons.check, color: AppColors.primary) : null,
-          onTap: () { ref.read(themeModeProvider.notifier).setTheme(m); Navigator.pop(ctx); },
-        )),
-      ]),
-    ));
+class _ProfileCard extends StatelessWidget {
+  final String name;
+  final String email;
+  final String role;
+  final String? photoUrl;
+  final VoidCallback onTap;
+
+  const _ProfileCard({
+    required this.name,
+    required this.email,
+    required this.role,
+    this.photoUrl,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      child: Card(
+        child: ListTile(
+          onTap: onTap,
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          leading: CircleAvatar(
+            radius: 24,
+            backgroundColor: AppColors.primary.withOpacity(0.1),
+            backgroundImage: (photoUrl != null && photoUrl!.isNotEmpty)
+                ? NetworkImage(photoUrl!)
+                : null,
+            child: (photoUrl == null || photoUrl!.isEmpty)
+                ? Text(
+                    name.isNotEmpty ? name[0].toUpperCase() : 'U',
+                    style: const TextStyle(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 18),
+                  )
+                : null,
+          ),
+          title: Text(name,
+              style:
+                  theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(email, style: theme.textTheme.bodySmall),
+              const SizedBox(height: 4),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text(role,
+                    style: const TextStyle(
+                        color: AppColors.primary,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600)),
+              ),
+            ],
+          ),
+          trailing: const Icon(Icons.chevron_right),
+        ),
+      ),
+    );
+  }
+}
+
+class _SettingsTile extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String? subtitle;
+  final VoidCallback? onTap;
+  final Widget? trailing;
+
+  const _SettingsTile({
+    required this.icon,
+    required this.title,
+    this.subtitle,
+    this.onTap,
+    this.trailing,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 2),
+      leading: Icon(icon, size: 22, color: AppColors.primary),
+      title: Text(title, style: const TextStyle(fontSize: 14)),
+      subtitle: subtitle != null
+          ? Text(subtitle!, style: const TextStyle(fontSize: 12))
+          : null,
+      trailing: trailing ??
+          (onTap != null
+              ? const Icon(Icons.chevron_right, size: 18)
+              : null),
+      onTap: onTap,
+    );
+  }
+}
+
+class _ThemeSelector extends StatelessWidget {
+  final ThemeMode current;
+  final WidgetRef ref;
+  const _ThemeSelector({required this.current, required this.ref});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final options = [
+      (ThemeMode.light,  l10n.settingsLightMode,  Icons.light_mode_outlined),
+      (ThemeMode.dark,   l10n.settingsDarkMode,   Icons.dark_mode_outlined),
+      (ThemeMode.system, l10n.settingsSystemMode,  Icons.brightness_auto_outlined),
+    ];
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      child: Row(
+        children: options.map((opt) {
+          final (mode, label, icon) = opt;
+          final isSelected = current == mode;
+          return Expanded(
+            child: GestureDetector(
+              onTap: () =>
+                  ref.read(themeModeProvider.notifier).setTheme(mode),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                margin: const EdgeInsets.symmetric(horizontal: 4),
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? AppColors.primary
+                      : AppColors.primary.withOpacity(0.06),
+                  borderRadius: BorderRadius.circular(12),
+                  border: isSelected
+                      ? Border.all(color: AppColors.primary, width: 2)
+                      : null,
+                ),
+                child: Column(
+                  children: [
+                    Icon(icon,
+                        size: 22,
+                        color: isSelected ? Colors.white : AppColors.primary),
+                    const SizedBox(height: 4),
+                    Text(label,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: isSelected ? Colors.white : AppColors.primary,
+                          fontWeight: isSelected
+                              ? FontWeight.w600
+                              : FontWeight.w400,
+                        )),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+}
+
+class _LanguageSelector extends StatelessWidget {
+  final String current;
+  final WidgetRef ref;
+  const _LanguageSelector({required this.current, required this.ref});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final langs = [
+      ('en', l10n.settingsEnglish, '🇬🇧'),
+      ('ar', l10n.settingsArabic,  '🇸🇦'),
+    ];
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      child: Row(
+        children: langs.map((lang) {
+          final (code, label, flag) = lang;
+          final isSelected = current == code;
+          return Expanded(
+            child: GestureDetector(
+              onTap: () =>
+                  ref.read(localeModeProvider.notifier).setLocale(code),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                margin: const EdgeInsets.symmetric(horizontal: 4),
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? AppColors.primary
+                      : AppColors.primary.withOpacity(0.06),
+                  borderRadius: BorderRadius.circular(12),
+                  border: isSelected
+                      ? Border.all(color: AppColors.primary, width: 2)
+                      : null,
+                ),
+                child: Column(
+                  children: [
+                    Text(flag, style: const TextStyle(fontSize: 24)),
+                    const SizedBox(height: 4),
+                    Text(label,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color:
+                              isSelected ? Colors.white : AppColors.primary,
+                          fontWeight: isSelected
+                              ? FontWeight.w600
+                              : FontWeight.w400,
+                        )),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
   }
 }

@@ -1,9 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import '../../core/constants/app_constants.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../constants/app_constants.dart';
+import 'token_manager.dart';
 
 class ApiClient {
-  static Dio create() {
+  static Dio create(TokenManager tokenManager) {
     final dio = Dio(BaseOptions(
       baseUrl: AppConstants.baseUrl,
       connectTimeout: AppConstants.connectTimeout,
@@ -15,7 +17,7 @@ class ApiClient {
     ));
 
     dio.interceptors.addAll([
-      _AuthInterceptor(),
+      _AuthInterceptor(tokenManager),
       LogInterceptor(
         requestBody: false,
         responseBody: false,
@@ -28,17 +30,35 @@ class ApiClient {
 }
 
 class _AuthInterceptor extends Interceptor {
+  final TokenManager _tokenManager;
+  _AuthInterceptor(this._tokenManager);
+
   @override
-  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    // TODO: Inject auth token from secure storage
+  Future<void> onRequest(
+      RequestOptions options, RequestInterceptorHandler handler) async {
+    final token = await _tokenManager.getAccessToken();
+    if (token != null && token.isNotEmpty) {
+      options.headers['Authorization'] = 'Bearer $token';
+    }
     handler.next(options);
   }
 
   @override
-  void onError(DioException err, ErrorInterceptorHandler handler) {
+  Future<void> onError(
+      DioException err, ErrorInterceptorHandler handler) async {
     if (err.response?.statusCode == 401) {
-      // TODO: Refresh token flow
+      // Attempt token refresh
+      final refreshToken = await _tokenManager.getRefreshToken();
+      if (refreshToken != null) {
+        // TODO: call refresh endpoint and retry
+        // For now, clear tokens and let the router redirect to login
+        await _tokenManager.clearTokens();
+      }
     }
     handler.next(err);
   }
 }
+
+final apiClientProvider = Provider<Dio>((ref) {
+  return ApiClient.create(ref.read(tokenManagerProvider));
+});
