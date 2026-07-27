@@ -1,72 +1,65 @@
-# Restaurant Ecosystem Platform
+# Tabaq Wafir — Restaurant Copilot
 
-## Project Overview
+A Flutter web app: a Restaurant Operating Intelligence Platform with AI-powered insights for restaurant owners and managers.
 
-A Flutter-based restaurant management platform currently in **Phase 1** (Restaurant App), being evolved into a full **4-app SaaS ecosystem**:
+## Stack
+- **Framework**: Flutter (web target)
+- **State management**: Riverpod + riverpod_generator
+- **Routing**: go_router
+- **Charts**: fl_chart
+- **HTTP client**: Dio
+- **Local storage**: Hive + SharedPreferences
+- **Auth**: flutter_secure_storage + Google Sign-In
+- **Localization**: Flutter gen-l10n (ARB files in `assets/translations/`)
 
-| App | Target | Status |
-|-----|--------|--------|
-| 🍽️ Restaurant App | Owners, Managers, Staff | ✅ Exists (`restaurant-app/`) |
-| 📱 Customer App | End customers | 🔜 Planned |
-| 🛵 Driver App | Delivery drivers | 🔜 Planned |
-| 🖥️ Admin Dashboard | Platform owners | 🔜 Planned |
-
-## Current Stack
-
-- **Framework:** Flutter 3.32 (Dart 3.8)
-- **State Management:** Riverpod + riverpod_annotation
-- **Navigation:** GoRouter
-- **HTTP:** Dio + JWT interceptor
-- **Storage:** Hive + flutter_secure_storage + sqflite
-- **Auth:** Google Sign-In (Google OAuth only — no email/password/OTP)
-- **UI:** Material 3 + Google Fonts (Inter) + Responsive Framework
-- **Localization:** AR + EN (ARB + JSON)
-- **Code Gen:** freezed + json_serializable + riverpod_generator
-
-## Architecture
-
-Clean Architecture, feature-first folder structure:
-
+## Project structure
 ```
-restaurant-app/lib/
-  core/           # ApiClient, TokenManager, RBAC, Router, Theme
-  features/       # One folder per feature
-  l10n/           # Translations
+restaurant-app/
+  lib/
+    features/         # Feature-first: each domain has data/domain/presentation
+    core/
+      theme/          # AppColors, ThemeData
+      widgets/        # Shared widgets (KpiCard, AlertCard, StatusBadge, …)
+      router/         # GoRouter setup (app_router.dart)
+    l10n/             # Generated localization helpers
+  assets/
+    translations/     # en.arb, ar.arb
+    images/
+    animations/
+    icons/
+  spa_server.py       # Python static file server for the web build
 ```
 
-## Planned Architecture (Ecosystem)
-
-- **Backend:** FastAPI (Python) + PostgreSQL 16 (PostGIS) + Redis
-- **Shared Dart Package:** `packages/core` (ApiClient, models, theme, l10n)
-- **Monorepo:** 4 Flutter apps + 1 FastAPI backend
-- **Auth:** Google OAuth2 → JWT (RS256)
-- **Real-time:** WebSockets (order tracking, kitchen display, driver location)
-- **Maps:** Google Maps Platform (Places, Directions, Geocoding, Distance Matrix)
-- **Notifications:** Firebase FCM + WhatsApp (Twilio)
-
-## Running the App
-
-```bash
-cd restaurant-app
-flutter pub get
-flutter build web --release --no-pub
-serve build/web -l 5000
+## How to run
+The workflow `Restaurant Copilot` builds and serves the Flutter web app:
 ```
+cd restaurant-app && flutter pub get && flutter build web --release --no-pub && python3 spa_server.py 5000 build/web
+```
+Build output is served on port 5000.
 
-Or use the **Restaurant Copilot** workflow in Replit.
+## Screen completion status
+### ✅ Complete screens
+- Auth (login, OTP, forgot password, splash, session expired)
+- Dashboard, Copilot, Alerts, Notifications
+- Inventory (main, products, stock count, waste, recipes)
+- Orders, Kitchen, Reservations, Customers, Employees
+- Accounting, Reports (Sales tab only), AI Assistant
+- Settings (main, profile, activity log), Promotions
 
-## Key Design Decisions
+### ⚠️ Inventory sub-pages — pages exist but router sends to _ComingSoon
+- `suppliers_page.dart`, `purchases_page.dart`, `transfers_page.dart`, `expiry_page.dart`
+  → Fix: update `app_router.dart` to route to the existing page classes
 
-- **Google Sign-In only** — no email, no password, no OTP, no Facebook
-- **RBAC** enforced on Backend (JWT payload); Frontend RBAC is UI-only
-- **Single shared backend** with role-based API access for all 4 apps
-- **PostGIS** for delivery zones (polygon containment) and driver tracking
-- **Offline-first** for Restaurant App (Hive + sqflite sync queue already present)
-- **No breaking changes** — existing Restaurant App features are preserved and extended, not rewritten
+### ❌ Missing screens (router shows _ComingSoon placeholder)
+- **Finance**: expenses, invoices, payments, profit, refunds
+- **Operations**: branches, tables, POS, attendance, today's tasks
+- **Analytics**: analytics, audit logs
+- **Reports**: Inventory / Employee / Customer tabs (Sales tab is done)
 
-## User Preferences
-
-- Arabic-first product (AR + EN support)
-- No code rewrite from scratch — extend and migrate existing code
-- SaaS multi-tenant: one backend serves all restaurants
-- Competitor benchmark: Talabat, Jahez, Uber Eats, Deliveroo
+## User preferences
+- Arabic-first project (content is in Arabic, names follow Saudi conventions)
+- Keep feature-first folder structure: `features/<name>/presentation/pages/`
+- Internal widgets go inside the page file or in `core/widgets/app_widgets.dart`
+- Use existing `KpiCard`, `SectionHeader`, `StatusBadge`, `EmptyState`, `AlertCard`, `AppSearchBar` from `app_widgets.dart`
+- Use `AppColors.*` for all colors — never hardcode hex values
+- Localization keys in `assets/translations/en.arb` and `ar.arb`; access via `.tr()` extension
