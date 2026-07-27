@@ -24,7 +24,16 @@ class _SplashPageState extends ConsumerState<SplashPage> {
     // Brief branding delay then check session
     await Future.delayed(const Duration(milliseconds: 1800));
     if (!mounted) return;
-    await ref.read(authProvider.notifier).checkSession();
+
+    try {
+      // 4-second safety timeout: on web over HTTP, secure storage can hang
+      await ref
+          .read(authProvider.notifier)
+          .checkSession()
+          .timeout(const Duration(seconds: 4));
+    } catch (_) {
+      // Timeout or error → treat as unauthenticated
+    }
     if (!mounted) return;
 
     final status = ref.read(authProvider).status;

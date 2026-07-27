@@ -27,7 +27,7 @@ outputType = "webview"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd restaurant-app && flutter pub get && flutter build web --release --no-pub && python3 -m http.server 5000 --directory build/web"
+args = "cd restaurant-app && flutter pub get && flutter build web --release --no-pub && python3 spa_server.py 5000 build/web"
 waitForPort = 5000
 
 [[ports]]

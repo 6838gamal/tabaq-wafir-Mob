@@ -1,38 +1,67 @@
 <!DOCTYPE html>
-<html>
+<html lang="ar" dir="rtl">
 <head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
   <base href="$FLUTTER_BASE_HREF">
 
   <meta charset="UTF-8">
-  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
+  <meta content="IE=Edge" http-equiv="X-UACompatible">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Restaurant Copilot — Restaurant Operating Intelligence">
+  <meta name="theme-color" content="#1E5EF3">
 
-  <!-- iOS meta tags & icons -->
+  <!-- No-cache for development: prevent stale service-worker lock-out -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma"        content="no-cache">
+  <meta http-equiv="Expires"       content="0">
+
+  <!-- Icons -->
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="hello_world">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Restaurant Copilot">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
+  <link rel="icon" type="image/png" href="favicon.png">
 
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png"/>
-
-  <title>hello_world</title>
+  <title>Restaurant Copilot</title>
   <link rel="manifest" href="manifest.json">
+
+  <style>
+    body { margin: 0; background: #1E5EF3; }
+  </style>
 </head>
 <body>
+  <!--
+    Force any stale service worker to activate immediately so rebuilt assets
+    are always served. This runs before flutter_bootstrap.js registers a new SW.
+  -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(regs) {
+        // If cached SW version doesn't match the build stamp in the URL,
+        // unregister all and reload once so the fresh SW is installed.
+        var stamp = '${serviceWorkerVersion}';
+        var stored = sessionStorage.getItem('sw_stamp');
+        if (stored && stored !== stamp) {
+          sessionStorage.setItem('sw_stamp', stamp);
+          Promise.all(regs.map(function(r){ return r.unregister(); }))
+            .then(function(){ location.reload(); });
+        } else {
+          sessionStorage.setItem('sw_stamp', stamp);
+          // Tell active SW to skip waiting and take control immediately
+          regs.forEach(function(r){
+            if (r.waiting) r.waiting.postMessage({type: 'SKIP_WAITING'});
+          });
+        }
+      });
+      // React to a new SW taking control — reload to get fresh assets
+      navigator.serviceWorker.addEventListener('controllerchange', function() {
+        if (!sessionStorage.getItem('sw_reloaded')) {
+          sessionStorage.setItem('sw_reloaded', '1');
+          location.reload();
+        }
+      });
+    }
+  </script>
+
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>
