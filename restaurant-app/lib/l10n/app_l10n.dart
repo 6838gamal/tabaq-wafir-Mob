@@ -321,6 +321,57 @@ class AppTranslations {
     'errors.not_found': 'Not found',
     'errors.validation': 'Please check your input',
     'errors.timeout': 'Request timed out',
+    // ── Expenses ──────────────────────────────────────────────────────────────
+    'expenses.title': 'Expenses',
+    'expenses.add': 'Add Expense',
+    'expenses.by_category': 'Expenses by Category',
+    'expenses.all_expenses': 'All Expenses',
+    'expenses.daily': 'Daily',
+    'expenses.weekly': 'Weekly',
+    'expenses.monthly': 'Monthly',
+    // ── Invoices ──────────────────────────────────────────────────────────────
+    'invoices.title': 'Invoices',
+    'invoices.add': 'New Invoice',
+    // ── Payments ──────────────────────────────────────────────────────────────
+    'payments.title': 'Payments',
+    'payments.by_method': 'Payment Method Breakdown',
+    'payments.transactions': 'Transactions',
+    // ── Profit ────────────────────────────────────────────────────────────────
+    'profit.title': 'Profit & Loss',
+    'profit.revenue': 'Revenue',
+    'profit.total_cost': 'Total Cost',
+    'profit.net_profit': 'Net Profit',
+    'profit.margin': 'Profit Margin',
+    'profit.weekly_trend': 'Weekly Trend',
+    'profit.pl_statement': 'P&L Statement',
+    'profit.cost_breakdown': 'Cost Breakdown',
+    // ── Refunds ───────────────────────────────────────────────────────────────
+    'refunds.title': 'Refunds',
+    // ── Branches ──────────────────────────────────────────────────────────────
+    'branches.title': 'Branches',
+    'branches.add': 'Add Branch',
+    'branches.all_branches': 'All Branches',
+    // ── Tables ────────────────────────────────────────────────────────────────
+    'tables.title': 'Tables',
+    // ── POS ───────────────────────────────────────────────────────────────────
+    'pos.title': 'Point of Sale',
+    // ── Attendance ────────────────────────────────────────────────────────────
+    'attendance.title': 'Attendance',
+    'attendance.staff_log': 'Staff Attendance Log',
+    // ── Today\'s Tasks ─────────────────────────────────────────────────────────
+    'todays_tasks.title': "Today's Tasks",
+    'todays_tasks.add': 'Add Task',
+    // ── Analytics ─────────────────────────────────────────────────────────────
+    'analytics.title': 'Analytics',
+    'analytics.revenue_trend': 'Revenue Trend',
+    'analytics.revenue_by_channel': 'Revenue by Channel',
+    'analytics.top_products': 'Top Products',
+    'analytics.hourly_traffic': 'Hourly Traffic',
+    'analytics.busiest_days': 'Busiest Days',
+    'analytics.customer_retention': 'Customer Retention',
+    'analytics.customer_segments': 'Customer Segments',
+    // ── Audit Log ─────────────────────────────────────────────────────────────
+    'audit_log.title': 'Audit Log',
   };
 
   static const Map<String, String> _ar = {
@@ -616,6 +667,57 @@ class AppTranslations {
     'errors.not_found': 'غير موجود',
     'errors.validation': 'يرجى مراجعة المدخلات',
     'errors.timeout': 'انتهت مهلة الطلب',
+    // ── Expenses ──────────────────────────────────────────────────────────────
+    'expenses.title': 'المصروفات',
+    'expenses.add': 'إضافة مصروف',
+    'expenses.by_category': 'المصروفات حسب الفئة',
+    'expenses.all_expenses': 'جميع المصروفات',
+    'expenses.daily': 'يومي',
+    'expenses.weekly': 'أسبوعي',
+    'expenses.monthly': 'شهري',
+    // ── Invoices ──────────────────────────────────────────────────────────────
+    'invoices.title': 'الفواتير',
+    'invoices.add': 'فاتورة جديدة',
+    // ── Payments ──────────────────────────────────────────────────────────────
+    'payments.title': 'المدفوعات',
+    'payments.by_method': 'توزيع طرق الدفع',
+    'payments.transactions': 'المعاملات',
+    // ── Profit ────────────────────────────────────────────────────────────────
+    'profit.title': 'الأرباح والخسائر',
+    'profit.revenue': 'الإيرادات',
+    'profit.total_cost': 'إجمالي التكاليف',
+    'profit.net_profit': 'صافي الربح',
+    'profit.margin': 'هامش الربح',
+    'profit.weekly_trend': 'الاتجاه الأسبوعي',
+    'profit.pl_statement': 'قائمة الأرباح والخسائر',
+    'profit.cost_breakdown': 'تفاصيل التكاليف',
+    // ── Refunds ───────────────────────────────────────────────────────────────
+    'refunds.title': 'المرتجعات',
+    // ── Branches ──────────────────────────────────────────────────────────────
+    'branches.title': 'الفروع',
+    'branches.add': 'إضافة فرع',
+    'branches.all_branches': 'جميع الفروع',
+    // ── Tables ────────────────────────────────────────────────────────────────
+    'tables.title': 'الطاولات',
+    // ── POS ───────────────────────────────────────────────────────────────────
+    'pos.title': 'نقطة البيع',
+    // ── Attendance ────────────────────────────────────────────────────────────
+    'attendance.title': 'الحضور والغياب',
+    'attendance.staff_log': 'سجل الحضور',
+    // ── Today\'s Tasks ─────────────────────────────────────────────────────────
+    'todays_tasks.title': 'مهام اليوم',
+    'todays_tasks.add': 'إضافة مهمة',
+    // ── Analytics ─────────────────────────────────────────────────────────────
+    'analytics.title': 'التحليلات',
+    'analytics.revenue_trend': 'اتجاه الإيرادات',
+    'analytics.revenue_by_channel': 'الإيرادات حسب القناة',
+    'analytics.top_products': 'أفضل المنتجات',
+    'analytics.hourly_traffic': 'حركة الزبائن بالساعة',
+    'analytics.busiest_days': 'أكثر الأيام ازدحاماً',
+    'analytics.customer_retention': 'معدل استبقاء العملاء',
+    'analytics.customer_segments': 'شرائح العملاء',
+    // ── Audit Log ─────────────────────────────────────────────────────────────
+    'audit_log.title': 'سجل المراجعة',
   };
 }
 

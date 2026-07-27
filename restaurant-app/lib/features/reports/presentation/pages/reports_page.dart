@@ -189,14 +189,276 @@ class _ReportsPageState extends State<ReportsPage> with SingleTickerProviderStat
   }
 
   Widget _buildInventoryReport() {
-    return const Center(child: Text('Inventory Report — coming soon'));
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final topConsumed = [
+      _ReportRow('Grilled Chicken', '42 kg', AppColors.kpiOrange),
+      _ReportRow('Beef Tenderloin', '28 kg', AppColors.kpiRed),
+      _ReportRow('Heavy Cream', '18 L', AppColors.kpiBlue),
+      _ReportRow('Saffron', '180 g', AppColors.kpiPurple),
+      _ReportRow('Cherry Tomatoes', '24 kg', AppColors.kpiGreen),
+    ];
+    final wasteValues = [1.8, 2.4, 1.6, 3.2, 2.8, 2.1, 1.9];
+    return ListView(padding: const EdgeInsets.all(16), children: [
+      GridView.count(crossAxisCount: 2, shrinkWrap: true, physics: const NeverScrollableScrollPhysics(),
+        crossAxisSpacing: 12, mainAxisSpacing: 12, childAspectRatio: 1.6,
+        children: [
+          KpiCard(title: 'Stock Value', value: 'SAR 84K', icon: Icons.inventory_2_outlined, color: AppColors.kpiBlue),
+          KpiCard(title: 'Waste Rate', value: '2.3%', icon: Icons.delete_outline, color: AppColors.warning, change: 0.4, isPositiveChange: false),
+          KpiCard(title: 'Reorder Items', value: '7', icon: Icons.warning_amber_outlined, color: AppColors.error),
+          KpiCard(title: 'Turnover Rate', value: '4.2×', icon: Icons.loop_outlined, color: AppColors.kpiGreen, change: 5.0, isPositiveChange: true),
+        ],
+      ),
+      const SizedBox(height: 20),
+      SectionHeader(title: 'Top Consumed Items'),
+      const SizedBox(height: 12),
+      Container(
+        decoration: BoxDecoration(
+          color: isDark ? AppColors.cardDark : AppColors.cardLight,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: isDark ? AppColors.borderDark : AppColors.borderLight),
+        ),
+        child: Column(children: topConsumed.asMap().entries.map((e) {
+          final isLast = e.key == topConsumed.length - 1;
+          return Column(children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Row(children: [
+                Container(
+                  width: 28, height: 28,
+                  decoration: BoxDecoration(color: e.value.color.withOpacity(0.1), shape: BoxShape.circle),
+                  child: Center(child: Text('${e.key + 1}',
+                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: e.value.color))),
+                ),
+                const SizedBox(width: 12),
+                Expanded(child: Text(e.value.label, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500))),
+                Text(e.value.value, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: e.value.color)),
+              ]),
+            ),
+            if (!isLast) Divider(height: 1, color: isDark ? AppColors.borderDark : AppColors.borderLight),
+          ]);
+        }).toList()),
+      ),
+      const SizedBox(height: 20),
+      SectionHeader(title: 'Waste % by Day'),
+      const SizedBox(height: 12),
+      Container(
+        height: 140, padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: isDark ? AppColors.cardDark : AppColors.cardLight,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: isDark ? AppColors.borderDark : AppColors.borderLight),
+        ),
+        child: BarChart(BarChartData(
+          barGroups: wasteValues.asMap().entries.map((e) => BarChartGroupData(x: e.key, barRods: [
+            BarChartRodData(
+              toY: e.value,
+              color: e.value > 2.5 ? AppColors.error : AppColors.kpiGreen,
+              width: 20, borderRadius: BorderRadius.circular(4),
+            ),
+          ])).toList(),
+          gridData: const FlGridData(show: false),
+          borderData: FlBorderData(show: false),
+          titlesData: FlTitlesData(
+            leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            bottomTitles: AxisTitles(sideTitles: SideTitles(
+              showTitles: true, reservedSize: 18,
+              getTitlesWidget: (v, _) {
+                const days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+                return Text(days[v.toInt()], style: const TextStyle(fontSize: 10));
+              },
+            )),
+          ),
+        )),
+      ),
+    ]);
   }
 
   Widget _buildEmployeeReport() {
-    return const Center(child: Text('Employee Report — coming soon'));
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final performers = [
+      _ReportRow('Hassan Ali — Head Chef', '98.2% attendance · 4.9★', AppColors.kpiGreen),
+      _ReportRow('Ahmed Mohammed — Waiter', '95.8% attendance · 4.7★', AppColors.kpiGreen),
+      _ReportRow('Omar Nasser — Sous Chef', '96.4% attendance · 4.8★', AppColors.kpiBlue),
+      _ReportRow('Sara Khalid — Cashier', '94.1% attendance · 4.5★', AppColors.kpiBlue),
+      _ReportRow('Noura Hassan — Inventory', '97.0% attendance · 4.6★', AppColors.kpiPurple),
+    ];
+    final hoursData = [8.2, 8.5, 7.9, 9.1, 8.8, 6.5, 8.3];
+    return ListView(padding: const EdgeInsets.all(16), children: [
+      GridView.count(crossAxisCount: 2, shrinkWrap: true, physics: const NeverScrollableScrollPhysics(),
+        crossAxisSpacing: 12, mainAxisSpacing: 12, childAspectRatio: 1.6,
+        children: [
+          KpiCard(title: 'Total Staff', value: '14', icon: Icons.people_outline, color: AppColors.kpiBlue),
+          KpiCard(title: 'Avg Attendance', value: '94.8%', icon: Icons.fact_check_outlined, color: AppColors.kpiGreen, change: 2.1, isPositiveChange: true),
+          KpiCard(title: 'Overtime Hours', value: '38 hrs', icon: Icons.timer_outlined, color: AppColors.warning),
+          KpiCard(title: 'Absent This Week', value: '2', icon: Icons.person_off_outlined, color: AppColors.error),
+        ],
+      ),
+      const SizedBox(height: 20),
+      SectionHeader(title: 'Daily Hours Worked'),
+      const SizedBox(height: 12),
+      Container(
+        height: 140, padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: isDark ? AppColors.cardDark : AppColors.cardLight,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: isDark ? AppColors.borderDark : AppColors.borderLight),
+        ),
+        child: BarChart(BarChartData(
+          barGroups: hoursData.asMap().entries.map((e) => BarChartGroupData(x: e.key, barRods: [
+            BarChartRodData(
+              toY: e.value,
+              color: e.value > 9 ? AppColors.kpiOrange : AppColors.kpiBlue,
+              width: 20, borderRadius: BorderRadius.circular(4),
+            ),
+          ])).toList(),
+          gridData: const FlGridData(show: false),
+          borderData: FlBorderData(show: false),
+          titlesData: FlTitlesData(
+            leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            bottomTitles: AxisTitles(sideTitles: SideTitles(
+              showTitles: true, reservedSize: 18,
+              getTitlesWidget: (v, _) {
+                const days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+                return Text(days[v.toInt()], style: const TextStyle(fontSize: 10));
+              },
+            )),
+          ),
+        )),
+      ),
+      const SizedBox(height: 20),
+      SectionHeader(title: 'Top Performers This Week'),
+      const SizedBox(height: 12),
+      Container(
+        decoration: BoxDecoration(
+          color: isDark ? AppColors.cardDark : AppColors.cardLight,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: isDark ? AppColors.borderDark : AppColors.borderLight),
+        ),
+        child: Column(children: performers.asMap().entries.map((e) {
+          final isLast = e.key == performers.length - 1;
+          return Column(children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Row(children: [
+                CircleAvatar(
+                  radius: 16,
+                  backgroundColor: e.value.color.withOpacity(0.12),
+                  child: Text('${e.key + 1}', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: e.value.color)),
+                ),
+                const SizedBox(width: 12),
+                Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text(e.value.label.split(' — ').first, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                  Text(e.value.label.split(' — ').last, style: const TextStyle(fontSize: 11, color: AppColors.textSecondaryLight)),
+                ])),
+                Text(e.value.value, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: e.value.color)),
+              ]),
+            ),
+            if (!isLast) Divider(height: 1, color: isDark ? AppColors.borderDark : AppColors.borderLight),
+          ]);
+        }).toList()),
+      ),
+    ]);
   }
 
   Widget _buildCustomerReport() {
-    return const Center(child: Text('Customer Report — coming soon'));
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final topSpenders = [
+      _ReportRow('Aisha Noor', 'SAR 18,900 · 61 visits', AppColors.kpiPurple),
+      _ReportRow('Mohammed Al-Ghamdi', 'SAR 12,400 · 48 visits', AppColors.kpiBlue),
+      _ReportRow('Sara Al-Otaibi', 'SAR 5,800 · 22 visits', AppColors.kpiGreen),
+      _ReportRow('Khalid Rashidi', 'SAR 3,200 · 15 visits', AppColors.kpiOrange),
+      _ReportRow('Fatima Hassan', 'SAR 1,600 · 8 visits', AppColors.kpiTeal),
+    ];
+    return ListView(padding: const EdgeInsets.all(16), children: [
+      GridView.count(crossAxisCount: 2, shrinkWrap: true, physics: const NeverScrollableScrollPhysics(),
+        crossAxisSpacing: 12, mainAxisSpacing: 12, childAspectRatio: 1.6,
+        children: [
+          KpiCard(title: 'Total Customers', value: '1,284', icon: Icons.people_outline, color: AppColors.kpiBlue, change: 9.3, isPositiveChange: true),
+          KpiCard(title: 'New Customers', value: '142', icon: Icons.person_add_outlined, color: AppColors.kpiGreen),
+          KpiCard(title: 'Avg Rating', value: '4.7 ★', icon: Icons.star_outlined, color: AppColors.kpiOrange),
+          KpiCard(title: 'Retention Rate', value: '68.4%', icon: Icons.loop_outlined, color: AppColors.kpiPurple, change: 4.1, isPositiveChange: true),
+        ],
+      ),
+      const SizedBox(height: 20),
+      SectionHeader(title: 'Customer Segments'),
+      const SizedBox(height: 12),
+      Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: isDark ? AppColors.cardDark : AppColors.cardLight,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: isDark ? AppColors.borderDark : AppColors.borderLight),
+        ),
+        child: Column(children: [
+          _segmentRow('VIP', 0.12, 154, AppColors.kpiPurple, isDark),
+          const SizedBox(height: 10),
+          _segmentRow('Regular', 0.45, 578, AppColors.kpiBlue, isDark),
+          const SizedBox(height: 10),
+          _segmentRow('Occasional', 0.28, 360, AppColors.kpiGreen, isDark),
+          const SizedBox(height: 10),
+          _segmentRow('New', 0.15, 192, AppColors.kpiOrange, isDark),
+        ]),
+      ),
+      const SizedBox(height: 20),
+      SectionHeader(title: 'Top Spenders'),
+      const SizedBox(height: 12),
+      Container(
+        decoration: BoxDecoration(
+          color: isDark ? AppColors.cardDark : AppColors.cardLight,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: isDark ? AppColors.borderDark : AppColors.borderLight),
+        ),
+        child: Column(children: topSpenders.asMap().entries.map((e) {
+          final isLast = e.key == topSpenders.length - 1;
+          return Column(children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Row(children: [
+                CircleAvatar(
+                  radius: 16,
+                  backgroundColor: e.value.color.withOpacity(0.12),
+                  child: Text(e.value.label.substring(0, 1),
+                      style: TextStyle(fontWeight: FontWeight.w700, color: e.value.color, fontSize: 12)),
+                ),
+                const SizedBox(width: 12),
+                Expanded(child: Text(e.value.label, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600))),
+                Text(e.value.value, style: TextStyle(fontSize: 12, color: e.value.color, fontWeight: FontWeight.w600)),
+              ]),
+            ),
+            if (!isLast) Divider(height: 1, color: isDark ? AppColors.borderDark : AppColors.borderLight),
+          ]);
+        }).toList()),
+      ),
+    ]);
   }
+
+  Widget _segmentRow(String label, double pct, int count, Color color, bool isDark) {
+    return Row(children: [
+      SizedBox(width: 72, child: Text(label, style: const TextStyle(fontSize: 12))),
+      Expanded(child: ClipRRect(
+        borderRadius: BorderRadius.circular(4),
+        child: LinearProgressIndicator(
+          value: pct,
+          backgroundColor: color.withOpacity(0.1),
+          valueColor: AlwaysStoppedAnimation<Color>(color),
+          minHeight: 10,
+        ),
+      )),
+      const SizedBox(width: 10),
+      Text('$count', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: color)),
+      const SizedBox(width: 4),
+      Text('(${(pct * 100).toStringAsFixed(0)}%)',
+          style: const TextStyle(fontSize: 11, color: AppColors.textSecondaryLight)),
+    ]);
+  }
+}
+
+class _ReportRow {
+  final String label, value;
+  final Color color;
+  _ReportRow(this.label, this.value, this.color);
 }

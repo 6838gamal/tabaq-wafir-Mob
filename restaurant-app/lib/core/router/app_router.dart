@@ -15,6 +15,10 @@ import '../../features/inventory/presentation/pages/products_page.dart';
 import '../../features/inventory/presentation/pages/recipes_page.dart';
 import '../../features/inventory/presentation/pages/stock_count_page.dart';
 import '../../features/inventory/presentation/pages/waste_page.dart';
+import '../../features/inventory/presentation/pages/suppliers_page.dart';
+import '../../features/inventory/presentation/pages/purchases_page.dart';
+import '../../features/inventory/presentation/pages/transfers_page.dart';
+import '../../features/inventory/presentation/pages/expiry_page.dart';
 import '../../features/orders/presentation/pages/orders_page.dart';
 import '../../features/kitchen/presentation/pages/kitchen_page.dart';
 import '../../features/reservations/presentation/pages/reservations_page.dart';
@@ -27,6 +31,19 @@ import '../../features/settings/presentation/pages/settings_page.dart';
 import '../../features/settings/presentation/pages/profile_page.dart';
 import '../../features/settings/presentation/pages/activity_log_page.dart';
 import '../../features/auth/presentation/providers/auth_provider.dart';
+// New feature pages
+import '../../features/branches/presentation/pages/branches_page.dart';
+import '../../features/tables/presentation/pages/tables_page.dart';
+import '../../features/pos/presentation/pages/pos_page.dart';
+import '../../features/attendance/presentation/pages/attendance_page.dart';
+import '../../features/todays_tasks/presentation/pages/todays_tasks_page.dart';
+import '../../features/expenses/presentation/pages/expenses_page.dart';
+import '../../features/invoices/presentation/pages/invoices_page.dart';
+import '../../features/payments/presentation/pages/payments_page.dart';
+import '../../features/profit/presentation/pages/profit_page.dart';
+import '../../features/refunds/presentation/pages/refunds_page.dart';
+import '../../features/analytics/presentation/pages/analytics_page.dart';
+import '../../features/audit_log/presentation/pages/audit_log_page.dart';
 import '../widgets/main_shell.dart';
 
 class AppRoutes {
@@ -166,24 +183,24 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(path: AppRoutes.settings,     builder: (_, __) => const SettingsPage()),
           GoRoute(path: AppRoutes.profile,      builder: (_, __) => const ProfilePage()),
           GoRoute(path: AppRoutes.activityLog,  builder: (_, __) => const ActivityLogPage()),
-          // New routes — coming-soon pages
-          GoRoute(path: AppRoutes.branches,     builder: (_, s) => _ComingSoon('Branches')),
-          GoRoute(path: AppRoutes.suppliers,    builder: (_, s) => _ComingSoon('Suppliers')),
-          GoRoute(path: AppRoutes.purchases,    builder: (_, s) => _ComingSoon('Purchases')),
-          GoRoute(path: AppRoutes.analytics,    builder: (_, s) => _ComingSoon('Analytics')),
-          GoRoute(path: AppRoutes.auditLogs,    builder: (_, s) => _ComingSoon('Audit Logs')),
-          GoRoute(path: AppRoutes.todaysTasks,  builder: (_, s) => _ComingSoon("Today's Tasks")),
-          GoRoute(path: AppRoutes.attendance,   builder: (_, s) => _ComingSoon('Attendance')),
-          GoRoute(path: AppRoutes.pos,          builder: (_, s) => _ComingSoon('POS')),
-          GoRoute(path: AppRoutes.refunds,      builder: (_, s) => _ComingSoon('Refunds')),
+          // Previously coming-soon — now fully built
+          GoRoute(path: AppRoutes.branches,     builder: (_, __) => const BranchesPage()),
+          GoRoute(path: AppRoutes.suppliers,    builder: (_, __) => const SuppliersPage()),
+          GoRoute(path: AppRoutes.purchases,    builder: (_, __) => const PurchasesPage()),
+          GoRoute(path: AppRoutes.analytics,    builder: (_, __) => const AnalyticsPage()),
+          GoRoute(path: AppRoutes.auditLogs,    builder: (_, __) => const AuditLogPage()),
+          GoRoute(path: AppRoutes.todaysTasks,  builder: (_, __) => const TodaysTasksPage()),
+          GoRoute(path: AppRoutes.attendance,   builder: (_, __) => const AttendancePage()),
+          GoRoute(path: AppRoutes.pos,          builder: (_, __) => const PosPage()),
+          GoRoute(path: AppRoutes.refunds,      builder: (_, __) => const RefundsPage()),
           GoRoute(path: AppRoutes.recipes,      builder: (_, __) => const RecipesPage()),
-          GoRoute(path: AppRoutes.transfers,    builder: (_, s) => _ComingSoon('Transfers')),
-          GoRoute(path: AppRoutes.expiry,       builder: (_, s) => _ComingSoon('Expiry')),
-          GoRoute(path: AppRoutes.expenses,     builder: (_, s) => _ComingSoon('Expenses')),
-          GoRoute(path: AppRoutes.invoices,     builder: (_, s) => _ComingSoon('Invoices')),
-          GoRoute(path: AppRoutes.payments,     builder: (_, s) => _ComingSoon('Payments')),
-          GoRoute(path: AppRoutes.profit,       builder: (_, s) => _ComingSoon('Profit')),
-          GoRoute(path: AppRoutes.tables,       builder: (_, s) => _ComingSoon('Tables')),
+          GoRoute(path: AppRoutes.transfers,    builder: (_, __) => const TransfersPage()),
+          GoRoute(path: AppRoutes.expiry,       builder: (_, __) => const ExpiryPage()),
+          GoRoute(path: AppRoutes.expenses,     builder: (_, __) => const ExpensesPage()),
+          GoRoute(path: AppRoutes.invoices,     builder: (_, __) => const InvoicesPage()),
+          GoRoute(path: AppRoutes.payments,     builder: (_, __) => const PaymentsPage()),
+          GoRoute(path: AppRoutes.profit,       builder: (_, __) => const ProfitPage()),
+          GoRoute(path: AppRoutes.tables,       builder: (_, __) => const TablesPage()),
         ],
       ),
     ],
