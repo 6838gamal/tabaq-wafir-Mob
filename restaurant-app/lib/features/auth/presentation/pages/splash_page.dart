@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:animate_do/animate_do.dart';
-import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../providers/auth_provider.dart';
 
@@ -21,26 +19,21 @@ class _SplashPageState extends ConsumerState<SplashPage> {
   }
 
   Future<void> _init() async {
-    // Brief branding delay then check session
+    // Brief branding delay
     await Future.delayed(const Duration(milliseconds: 1800));
     if (!mounted) return;
 
     try {
-      // 4-second safety timeout: on web over HTTP, secure storage can hang
+      // checkSession() updates authProvider state when done.
+      // The GoRouter redirect watches authProvider and navigates
+      // away from /splash automatically — no context.go() needed here.
       await ref
           .read(authProvider.notifier)
           .checkSession()
-          .timeout(const Duration(seconds: 2));
+          .timeout(const Duration(seconds: 3));
     } catch (_) {
-      // Timeout or error → treat as unauthenticated
-    }
-    if (!mounted) return;
-
-    final status = ref.read(authProvider).status;
-    if (status == AuthStatus.authenticated) {
-      context.go(AppRoutes.dashboard);
-    } else {
-      context.go(AppRoutes.login);
+      // Timeout / error → force unauthenticated so the redirect fires
+      ref.read(authProvider.notifier).forceUnauthenticated();
     }
   }
 

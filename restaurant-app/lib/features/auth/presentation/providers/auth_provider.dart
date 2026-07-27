@@ -86,6 +86,12 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = state.copyWith(status: AuthStatus.sessionExpired);
   }
 
+  /// Called from SplashPage when checkSession times out or throws,
+  /// so the router redirect can fire and leave the splash screen.
+  void forceUnauthenticated() {
+    state = state.copyWith(status: AuthStatus.unauthenticated);
+  }
+
   void _applyUser(UserModel user) {
     // Sync role into RBAC provider
     _ref.read(currentRoleProvider.notifier).state = user.role;

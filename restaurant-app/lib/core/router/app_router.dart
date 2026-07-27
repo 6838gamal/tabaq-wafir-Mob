@@ -115,30 +115,39 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     redirect: (context, state) {
       final authState = ref.read(authProvider);
       final loc = state.matchedLocation;
+      final status = authState.status;
 
-      final publicRoutes = {
-        AppRoutes.splash,
-        AppRoutes.login,
-        AppRoutes.unauthorized,
-        AppRoutes.sessionExpired,
-      };
+      // ── Splash screen ────────────────────────────────────────────────────
+      // While auth is still resolving (initial / loading) stay on splash.
+      // Once resolved, the router drives navigation — no context.go() needed.
+      if (loc == AppRoutes.splash) {
+        if (status == AuthStatus.initial || status == AuthStatus.loading) {
+          return null; // keep showing splash
+        }
+        if (status == AuthStatus.authenticated) return AppRoutes.dashboard;
+        return AppRoutes.login; // unauthenticated / error / sessionExpired
+      }
 
-      final isPublic = publicRoutes.contains(loc);
-
-      // Session expired → dedicated screen
-      if (authState.status == AuthStatus.sessionExpired &&
+      // ── Session expired ──────────────────────────────────────────────────
+      if (status == AuthStatus.sessionExpired &&
           loc != AppRoutes.sessionExpired) {
         return AppRoutes.sessionExpired;
       }
 
-      // Not authenticated → login
+      // ── Protected routes ─────────────────────────────────────────────────
+      const publicRoutes = {
+        AppRoutes.login,
+        AppRoutes.unauthorized,
+        AppRoutes.sessionExpired,
+      };
+      final isPublic = publicRoutes.contains(loc);
+
       if (!authState.isAuthenticated && !isPublic) {
         return AppRoutes.login;
       }
 
-      // Authenticated but hitting public route → dashboard
-      if (authState.isAuthenticated &&
-          (loc == AppRoutes.login || loc == AppRoutes.splash)) {
+      // ── Authenticated on a public route ──────────────────────────────────
+      if (authState.isAuthenticated && isPublic) {
         return AppRoutes.dashboard;
       }
 
