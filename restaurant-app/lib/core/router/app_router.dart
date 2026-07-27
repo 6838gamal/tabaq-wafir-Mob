@@ -90,43 +90,20 @@ class AppRoutes {
   static const String recipes       = '/inventory/recipes';
 }
 
-// Router refreshes when auth state changes
-class _RouterNotifier extends ChangeNotifier {
-  final Ref _ref;
-  _RouterNotifier(this._ref) {
-    _ref.listen(authProvider, (_, __) => notifyListeners());
-  }
-}
-
-final _routerNotifierProvider = ChangeNotifierProvider<_RouterNotifier>(
-  (ref) => _RouterNotifier(ref),
-);
-
 final appRouterProvider = Provider<GoRouter>((ref) {
-  // Use ref.read — NOT ref.watch — so the GoRouter is created once.
-  // Watching would rebuild the whole router (resetting to initialLocation: /splash)
-  // every time auth state changes. The refreshListenable still triggers redirect.
-  final notifier = ref.read(_routerNotifierProvider);
-
+  // No refreshListenable — the splash drives its own navigation via ref.listen,
+  // and route guards run on every GoRouter navigation attempt via redirect below.
+  // This avoids any timing conflict between refreshListenable and context.go.
   return GoRouter(
     initialLocation: AppRoutes.splash,
     debugLogDiagnostics: false,
-    refreshListenable: notifier,
     redirect: (context, state) {
       final authState = ref.read(authProvider);
       final loc = state.matchedLocation;
       final status = authState.status;
 
-      // ── Splash screen ────────────────────────────────────────────────────
-      // While auth is still resolving (initial / loading) stay on splash.
-      // Once resolved, the router drives navigation — no context.go() needed.
-      if (loc == AppRoutes.splash) {
-        if (status == AuthStatus.initial || status == AuthStatus.loading) {
-          return null; // keep showing splash
-        }
-        if (status == AuthStatus.authenticated) return AppRoutes.dashboard;
-        return AppRoutes.login; // unauthenticated / error / sessionExpired
-      }
+      // Splash handles its own exit — leave it alone.
+      if (loc == AppRoutes.splash) return null;
 
       // ── Session expired ──────────────────────────────────────────────────
       if (status == AuthStatus.sessionExpired &&
@@ -134,7 +111,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         return AppRoutes.sessionExpired;
       }
 
-      // ── Protected routes ─────────────────────────────────────────────────
+      // ── Protected routes: must be authenticated ──────────────────────────
       const publicRoutes = {
         AppRoutes.login,
         AppRoutes.unauthorized,
@@ -146,7 +123,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         return AppRoutes.login;
       }
 
-      // ── Authenticated on a public route ──────────────────────────────────
+      // ── Authenticated on a public route → dashboard ──────────────────────
       if (authState.isAuthenticated && isPublic) {
         return AppRoutes.dashboard;
       }

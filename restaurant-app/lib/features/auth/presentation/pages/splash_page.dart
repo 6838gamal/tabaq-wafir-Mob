@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:animate_do/animate_do.dart';
+import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../providers/auth_provider.dart';
 
@@ -12,33 +14,52 @@ class SplashPage extends ConsumerStatefulWidget {
 }
 
 class _SplashPageState extends ConsumerState<SplashPage> {
+  bool _canNavigate = false; // true after the branding delay
+
   @override
   void initState() {
     super.initState();
-    _init();
+    _startDelay();
   }
 
-  Future<void> _init() async {
-    // Brief branding delay
+  Future<void> _startDelay() async {
     await Future.delayed(const Duration(milliseconds: 1800));
     if (!mounted) return;
+    setState(() => _canNavigate = true);
 
     try {
-      // checkSession() updates authProvider state when done.
-      // The GoRouter redirect watches authProvider and navigates
-      // away from /splash automatically — no context.go() needed here.
       await ref
           .read(authProvider.notifier)
           .checkSession()
           .timeout(const Duration(seconds: 3));
     } catch (_) {
-      // Timeout / error → force unauthenticated so the redirect fires
       ref.read(authProvider.notifier).forceUnauthenticated();
     }
+
+    // Explicit fallback: ref.listen fires on state *changes*, so if checkSession
+    // resolved before the listener was registered we navigate here directly.
+    if (mounted) _navigate(ref.read(authProvider));
+  }
+
+  void _navigate(AuthState auth) {
+    if (!_canNavigate || !mounted) return;
+    final status = auth.status;
+    if (status == AuthStatus.authenticated) {
+      context.go(AppRoutes.dashboard);
+    } else if (status == AuthStatus.unauthenticated ||
+        status == AuthStatus.error ||
+        status == AuthStatus.sessionExpired) {
+      context.go(AppRoutes.login);
+    }
+    // initial / loading → wait
   }
 
   @override
   Widget build(BuildContext context) {
+    // Listen to auth state changes and navigate once the branding delay is done.
+    // Using ref.listen (not refreshListenable/redirect) avoids GoRouter timing issues.
+    ref.listen<AuthState>(authProvider, (_, auth) => _navigate(auth));
+
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(gradient: AppColors.primaryGradient),
