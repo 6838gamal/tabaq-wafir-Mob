@@ -30,7 +30,7 @@ class _SplashPageState extends ConsumerState<SplashPage> {
       await ref
           .read(authProvider.notifier)
           .checkSession()
-          .timeout(const Duration(seconds: 4));
+          .timeout(const Duration(seconds: 2));
     } catch (_) {
       // Timeout or error → treat as unauthenticated
     }

@@ -21,13 +21,17 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<UserModel?> signInWithGoogle() async {
+    // ── Mock mode ────────────────────────────────────────────────────────────
+    // When no real Web Client ID is configured we return a mock Google user
+    // immediately so the UI flow can be tested end-to-end without OAuth setup.
+    if (AppConstants.googleClientId.isEmpty) {
+      return _signInWithMockGoogle();
+    }
+
+    // ── Real Google Sign-In ───────────────────────────────────────────────────
     try {
       if (!_googleInitialized) {
-        await _googleSignIn.initialize(
-          clientId: AppConstants.googleClientId.isNotEmpty
-              ? AppConstants.googleClientId
-              : null,
-        );
+        await _googleSignIn.initialize(clientId: AppConstants.googleClientId);
         _googleInitialized = true;
       }
 
@@ -38,17 +42,13 @@ class AuthRepositoryImpl implements AuthRepository {
       final auth = await account.authentication;
       final token = auth.idToken ?? '';
 
-      // Save tokens
-      await _tokenManager.saveTokens(
-        accessToken: token,
-      );
+      await _tokenManager.saveTokens(accessToken: token);
 
       final user = UserModel(
         id: account.id,
         name: account.displayName ?? account.email,
         email: account.email,
         photoUrl: account.photoUrl,
-        // Role assigned from backend in production; default to owner for now
         role: await _loadSavedRole() ?? UserRole.owner,
         branchIds: ['branch_1'],
         lastLogin: DateTime.now(),
@@ -59,6 +59,27 @@ class AuthRepositoryImpl implements AuthRepository {
     } catch (_) {
       rethrow;
     }
+  }
+
+  /// Returns a mock Google user — used when [AppConstants.googleClientId] is
+  /// empty (development / demo environment).
+  Future<UserModel?> _signInWithMockGoogle() async {
+    await Future.delayed(const Duration(milliseconds: 600)); // simulate network
+    const mockToken = 'mock_google_token_dev';
+    await _tokenManager.saveTokens(accessToken: mockToken);
+
+    final user = UserModel(
+      id: 'google_mock_001',
+      name: 'Demo Manager',
+      email: 'demo@restaurantcopilot.app',
+      photoUrl: null,
+      role: await _loadSavedRole() ?? UserRole.owner,
+      branchIds: ['branch_1'],
+      lastLogin: DateTime.now(),
+    );
+
+    await _persistUser(user);
+    return user;
   }
 
   @override
