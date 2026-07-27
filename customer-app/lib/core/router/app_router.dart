@@ -1,141 +1,120 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:restaurant_customer_app/core/router/route_names.dart';
-import 'package:restaurant_customer_app/features/auth/presentation/screens/login_screen.dart';
-import 'package:restaurant_customer_app/features/cart/presentation/screens/cart_screen.dart';
-import 'package:restaurant_customer_app/features/cart/presentation/screens/checkout_screen.dart';
-import 'package:restaurant_customer_app/features/chat/presentation/screens/chat_screen.dart';
-import 'package:restaurant_customer_app/features/discovery/presentation/screens/discovery_screen.dart';
-import 'package:restaurant_customer_app/features/discovery/presentation/screens/search_screen.dart';
-import 'package:restaurant_customer_app/features/favorites/presentation/screens/favorites_screen.dart';
-import 'package:restaurant_customer_app/features/home/presentation/screens/home_screen.dart';
-import 'package:restaurant_customer_app/features/maps/presentation/screens/map_picker_screen.dart';
-import 'package:restaurant_customer_app/features/maps/presentation/screens/saved_addresses_screen.dart';
-import 'package:restaurant_customer_app/features/notifications/presentation/screens/notifications_screen.dart';
-import 'package:restaurant_customer_app/features/orders/presentation/screens/order_detail_screen.dart';
-import 'package:restaurant_customer_app/features/orders/presentation/screens/order_tracking_screen.dart';
-import 'package:restaurant_customer_app/features/orders/presentation/screens/orders_screen.dart';
-import 'package:restaurant_customer_app/features/profile/presentation/screens/edit_profile_screen.dart';
-import 'package:restaurant_customer_app/features/profile/presentation/screens/profile_screen.dart';
-import 'package:restaurant_customer_app/features/profile/presentation/screens/settings_screen.dart';
-import 'package:restaurant_customer_app/features/restaurant/presentation/screens/restaurant_detail_screen.dart';
-import 'package:restaurant_customer_app/features/reviews/presentation/screens/rate_order_screen.dart';
 
-final appRouter = GoRouter(
-  initialLocation: RouteNames.login,
-  routes: [
-    GoRoute(
-      path: RouteNames.login,
-      name: 'login',
-      builder: (context, state) => const LoginScreen(),
+import '../../features/splash/splash_page.dart';
+import '../../features/auth/presentation/screens/login_screen.dart';
+import '../../features/home/presentation/screens/home_screen.dart';
+import '../../features/orders/presentation/screens/orders_screen.dart';
+import '../../features/orders/presentation/screens/order_detail_screen.dart';
+import '../../features/orders/presentation/screens/order_tracking_screen.dart';
+import '../../features/favorites/presentation/screens/favorites_screen.dart';
+import '../../features/profile/presentation/screens/profile_screen.dart';
+import '../../features/profile/presentation/screens/settings_screen.dart';
+import '../../features/profile/presentation/screens/edit_profile_screen.dart';
+import '../../features/cart/presentation/screens/cart_screen.dart';
+import '../../features/cart/presentation/screens/checkout_screen.dart';
+import '../../features/notifications/presentation/screens/notifications_screen.dart';
+import '../../features/discovery/presentation/screens/discovery_screen.dart';
+import '../../features/discovery/presentation/screens/search_screen.dart';
+import '../../features/maps/presentation/screens/map_picker_screen.dart';
+import '../../features/maps/presentation/screens/saved_addresses_screen.dart';
+import '../../features/chat/presentation/screens/chat_screen.dart';
+import '../widgets/main_shell.dart';
+
+final appRouterProvider = Provider<GoRouter>((ref) {
+  return GoRouter(
+    initialLocation: '/splash',
+    routes: [
+      GoRoute(
+        path: '/splash',
+        builder: (context, state) => const SplashPage(),
+      ),
+      GoRoute(
+        path: '/login',
+        builder: (context, state) => const LoginScreen(),
+      ),
+
+      // ── Main shell ────────────────────────────────────────────────────────
+      ShellRoute(
+        builder: (context, state, child) => MainShell(child: child),
+        routes: [
+          GoRoute(
+            path: '/home',
+            builder: (context, state) => const HomeScreen(),
+          ),
+          GoRoute(
+            path: '/orders',
+            builder: (context, state) => const OrdersScreen(),
+            routes: [
+              GoRoute(
+                path: ':id',
+                builder: (context, state) =>
+                    OrderDetailScreen(orderId: state.pathParameters['id']!),
+              ),
+              GoRoute(
+                path: 'track/:id',
+                builder: (context, state) =>
+                    OrderTrackingScreen(orderId: state.pathParameters['id']!),
+              ),
+            ],
+          ),
+          GoRoute(
+            path: '/favorites',
+            builder: (context, state) => const FavoritesScreen(),
+          ),
+          GoRoute(
+            path: '/profile',
+            builder: (context, state) => const ProfileScreen(),
+          ),
+          GoRoute(
+            path: '/settings',
+            builder: (context, state) => const SettingsScreen(),
+          ),
+        ],
+      ),
+
+      // ── Routes outside shell ──────────────────────────────────────────────
+      GoRoute(
+        path: '/profile/edit',
+        builder: (context, state) => const EditProfileScreen(),
+      ),
+      GoRoute(
+        path: '/cart',
+        builder: (context, state) => const CartScreen(),
+      ),
+      GoRoute(
+        path: '/checkout',
+        builder: (context, state) => const CheckoutScreen(),
+      ),
+      GoRoute(
+        path: '/notifications',
+        builder: (context, state) => const NotificationsScreen(),
+      ),
+      GoRoute(
+        path: '/discovery',
+        builder: (context, state) => const DiscoveryScreen(),
+      ),
+      GoRoute(
+        path: '/search',
+        builder: (context, state) => const SearchScreen(),
+      ),
+      GoRoute(
+        path: '/map-picker',
+        builder: (context, state) => const MapPickerScreen(),
+      ),
+      GoRoute(
+        path: '/addresses',
+        builder: (context, state) => const SavedAddressesScreen(),
+      ),
+      GoRoute(
+        path: '/chat/:id',
+        builder: (context, state) =>
+            ChatScreen(chatId: state.pathParameters['id']!),
+      ),
+    ],
+    errorBuilder: (context, state) => Scaffold(
+      body: Center(child: Text('Page not found: ${state.error}')),
     ),
-    GoRoute(
-      path: RouteNames.home,
-      name: 'home',
-      builder: (context, state) => const HomeScreen(),
-    ),
-    GoRoute(
-      path: RouteNames.discovery,
-      name: 'discovery',
-      builder: (context, state) => const DiscoveryScreen(),
-    ),
-    GoRoute(
-      path: RouteNames.search,
-      name: 'search',
-      builder: (context, state) => const SearchScreen(),
-    ),
-    GoRoute(
-      path: RouteNames.restaurant,
-      name: 'restaurant',
-      builder: (context, state) {
-        final id = state.pathParameters['id'] ?? '';
-        return RestaurantDetailScreen(restaurantId: id);
-      },
-    ),
-    GoRoute(
-      path: RouteNames.cart,
-      name: 'cart',
-      builder: (context, state) => const CartScreen(),
-    ),
-    GoRoute(
-      path: RouteNames.checkout,
-      name: 'checkout',
-      builder: (context, state) => const CheckoutScreen(),
-    ),
-    GoRoute(
-      path: RouteNames.mapPicker,
-      name: 'mapPicker',
-      builder: (context, state) => const MapPickerScreen(),
-    ),
-    GoRoute(
-      path: RouteNames.addresses,
-      name: 'addresses',
-      builder: (context, state) => const SavedAddressesScreen(),
-    ),
-    GoRoute(
-      path: RouteNames.orders,
-      name: 'orders',
-      builder: (context, state) => const OrdersScreen(),
-    ),
-    GoRoute(
-      path: RouteNames.orderDetail,
-      name: 'orderDetail',
-      builder: (context, state) {
-        final id = state.pathParameters['id'] ?? '';
-        return OrderDetailScreen(orderId: id);
-      },
-    ),
-    GoRoute(
-      path: RouteNames.tracking,
-      name: 'tracking',
-      builder: (context, state) {
-        final id = state.pathParameters['id'] ?? '';
-        return OrderTrackingScreen(orderId: id);
-      },
-    ),
-    GoRoute(
-      path: RouteNames.chat,
-      name: 'chat',
-      builder: (context, state) {
-        final id = state.pathParameters['id'] ?? '';
-        return ChatScreen(chatId: id);
-      },
-    ),
-    GoRoute(
-      path: RouteNames.favorites,
-      name: 'favorites',
-      builder: (context, state) => const FavoritesScreen(),
-    ),
-    GoRoute(
-      path: RouteNames.reviews,
-      name: 'reviews',
-      builder: (context, state) {
-        final orderId = state.pathParameters['orderId'] ?? '';
-        return RateOrderScreen(orderId: orderId);
-      },
-    ),
-    GoRoute(
-      path: RouteNames.notifications,
-      name: 'notifications',
-      builder: (context, state) => const NotificationsScreen(),
-    ),
-    GoRoute(
-      path: RouteNames.profile,
-      name: 'profile',
-      builder: (context, state) => const ProfileScreen(),
-    ),
-    GoRoute(
-      path: RouteNames.editProfile,
-      name: 'editProfile',
-      builder: (context, state) => const EditProfileScreen(),
-    ),
-    GoRoute(
-      path: RouteNames.settings,
-      name: 'settings',
-      builder: (context, state) => const SettingsScreen(),
-    ),
-  ],
-  errorBuilder: (context, state) => Scaffold(
-    body: Center(child: Text('Page not found: ${state.error}')),
-  ),
-);
+  );
+});

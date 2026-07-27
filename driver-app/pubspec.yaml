@@ -9,24 +9,53 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # State Management
   flutter_riverpod: ^2.5.1
   riverpod_annotation: ^2.3.5
+
+  # Navigation
   go_router: ^13.2.0
+
+  # Network
   dio: ^5.4.3+1
+
+  # Local Storage
+  shared_preferences: ^2.2.3
+
+  # Auth
   google_sign_in: ^6.2.1
   firebase_core: ^2.30.1
   firebase_auth: ^4.19.6
   firebase_messaging: ^14.9.4
-  google_maps_flutter: ^2.6.1
+
+  # Location & Maps
   geolocator: ^11.0.0
+  google_maps_flutter: ^2.6.1
+
+  # Media
   image_picker: ^1.1.1
+
+  # Charts
   fl_chart: ^0.67.0
-  intl: ^0.19.0
-  shared_preferences: ^2.2.3
-  web_socket_channel: ^2.4.0
-  cached_network_image: ^3.3.1
+
+  # Notifications
   flutter_local_notifications: ^17.1.2
   permission_handler: ^11.3.1
+
+  # Real-time
+  web_socket_channel: ^2.4.0
+
+  # UI & Styling
+  google_fonts: ^6.3.2
+  responsive_framework: ^1.4.0
+  animate_do: ^3.3.4
+  cached_network_image: ^3.3.1
+
+  # Utils
+  intl: ^0.20.2
 
 dev_dependencies:
   flutter_test:
@@ -37,3 +66,4 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  generate: true

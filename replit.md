@@ -1,35 +1,62 @@
-# tabaq-wafir — Restaurant Copilot
+# tabaq-wafir — Restaurant Ecosystem Platform
 
-A Flutter web app: a Restaurant Operating Intelligence Platform with features including POS, orders, kitchen display, inventory, analytics, AI assistant, employees, reservations, and more.
+A monorepo containing four Flutter web apps and a shared FastAPI backend.
 
-## Stack
-- **Frontend**: Flutter (Dart) — web target
-- **State management**: Riverpod + code generation (riverpod_annotation, freezed)
-- **Navigation**: go_router
-- **HTTP**: Dio
-- **Local storage**: Hive, shared_preferences, flutter_secure_storage
-- **Charts**: fl_chart
-- **i18n**: flutter_localizations + l10n.yaml
+## Apps
 
-## Project structure
-```
-restaurant-app/
-  lib/
-    main.dart          — entry point
-    app.dart           — root widget / router setup
-    core/              — shared utilities, theme, services
-    features/          — one folder per feature (auth, dashboard, pos, orders, …)
-  assets/              — images, icons, lottie animations
-  web/                 — Flutter web shell (index.html, icons)
-  spa_server.py        — SPA-aware Python HTTP server for serving the built web app
-```
+| App | Description | Brand |
+|-----|-------------|-------|
+| `restaurant-app/` | Restaurant Copilot — owner/manager dashboard | Blue (`#1A56DB`) |
+| `customer-app/` | Customer ordering & discovery app | Orange (`#FF5722`) |
+| `driver-app/` | Driver delivery hub | Blue (`#2563EB`) |
+| `admin-dashboard/` | Platform administration | Indigo (`#1E40AF`) |
 
-## How to run
-The workflow **Restaurant Copilot** builds the Flutter web app and serves it on port 5000:
+## Shared patterns across all apps
+
+Every app follows the same architecture:
+- **State management**: Riverpod
+- **Navigation**: go_router with ShellRoute for sidebar/nav shell
+- **l10n**: Flutter gen-l10n with ARB files (`lib/l10n/app_en.arb` + `lib/l10n/app_ar.arb`)
+- **Theme**: `AppTheme.light` + `AppTheme.dark` with `themeModeProvider`
+- **Locale**: `localeModeProvider` in `lib/core/providers/settings_provider.dart`
+- **Navigation shell**: `lib/core/widgets/main_shell.dart` — sidebar on desktop, bottom nav + drawer on mobile
+- **Splash screen**: `lib/features/splash/splash_page.dart` — animated gradient + branding delay
+
+## How to run (restaurant-app is the active workflow)
+
+The **Restaurant Copilot** workflow builds and serves the restaurant app on port 5000:
 ```
 cd restaurant-app && flutter pub get && flutter build web --release --no-pub && python3 spa_server.py 5000 build/web
 ```
 
+To build any other app, run in its directory:
+```
+cd <app-dir> && flutter pub get && flutter build web --release --no-pub
+```
+
 After code changes, restart the workflow to rebuild and re-serve.
+
+## Project structure (per app)
+
+```
+<app>/
+  lib/
+    main.dart                  — ProviderScope entry point
+    app.dart                   — MaterialApp.router + l10n + theme + responsive
+    core/
+      router/app_router.dart   — GoRouter with /splash and ShellRoute
+      widgets/main_shell.dart  — sidebar (desktop) + bottom nav (mobile)
+      theme/app_colors.dart    — light + dark color palette
+      theme/app_theme.dart     — ThemeData light/dark
+      providers/settings_provider.dart — themeModeProvider + localeModeProvider
+    l10n/
+      app_en.arb               — English strings
+      app_ar.arb               — Arabic strings
+      app_localizations.dart   — auto-generated (flutter gen-l10n)
+      app_l10n.dart            — context.l10n extension + AppTranslations shim
+    features/
+      splash/splash_page.dart  — animated splash screen
+      ...
+```
 
 ## User preferences

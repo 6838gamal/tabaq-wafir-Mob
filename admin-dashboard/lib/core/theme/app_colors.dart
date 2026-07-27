@@ -20,20 +20,29 @@ class AppColors {
   static const Color info = Color(0xFF0284C7);
   static const Color infoLight = Color(0xFFE0F2FE);
 
-  // Neutrals
-  static const Color background = Color(0xFFF8FAFC);
-  static const Color surface = Color(0xFFFFFFFF);
-  static const Color surfaceVariant = Color(0xFFF1F5F9);
-  static const Color border = Color(0xFFE2E8F0);
-  static const Color divider = Color(0xFFE2E8F0);
+  // Light Theme
+  static const Color backgroundLight = Color(0xFFF8FAFC);
+  static const Color surfaceLight = Color(0xFFFFFFFF);
+  static const Color cardLight = Color(0xFFFFFFFF);
+  static const Color dividerLight = Color(0xFFE2E8F0);
+  static const Color textPrimaryLight = Color(0xFF0F172A);
+  static const Color textSecondaryLight = Color(0xFF64748B);
+  static const Color textHintLight = Color(0xFF94A3B8);
+  static const Color borderLight = Color(0xFFE2E8F0);
+  static const Color iconLight = Color(0xFF64748B);
 
-  // Text
-  static const Color textPrimary = Color(0xFF0F172A);
-  static const Color textSecondary = Color(0xFF64748B);
-  static const Color textDisabled = Color(0xFF94A3B8);
-  static const Color textOnPrimary = Color(0xFFFFFFFF);
+  // Dark Theme
+  static const Color backgroundDark = Color(0xFF0F172A);
+  static const Color surfaceDark = Color(0xFF1E293B);
+  static const Color cardDark = Color(0xFF1E293B);
+  static const Color dividerDark = Color(0xFF334155);
+  static const Color textPrimaryDark = Color(0xFFF8FAFC);
+  static const Color textSecondaryDark = Color(0xFF94A3B8);
+  static const Color textHintDark = Color(0xFF64748B);
+  static const Color borderDark = Color(0xFF334155);
+  static const Color iconDark = Color(0xFF94A3B8);
 
-  // Sidebar
+  // Sidebar (dark sidebar for admin)
   static const Color sidebarBg = Color(0xFF0F172A);
   static const Color sidebarItem = Color(0xFF94A3B8);
   static const Color sidebarItemActive = Color(0xFFFFFFFF);
@@ -50,4 +59,17 @@ class AppColors {
     Color(0xFF06B6D4),
     Color(0xFF84CC16),
   ];
+
+  // Gradients
+  static const LinearGradient primaryGradient = LinearGradient(
+    colors: [Color(0xFF1E40AF), Color(0xFF3B82F6)],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  static const LinearGradient darkGradient = LinearGradient(
+    colors: [Color(0xFF0F172A), Color(0xFF1E293B)],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
 }
