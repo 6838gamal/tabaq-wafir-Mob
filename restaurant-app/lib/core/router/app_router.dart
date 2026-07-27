@@ -103,7 +103,10 @@ final _routerNotifierProvider = ChangeNotifierProvider<_RouterNotifier>(
 );
 
 final appRouterProvider = Provider<GoRouter>((ref) {
-  final notifier = ref.watch(_routerNotifierProvider);
+  // Use ref.read — NOT ref.watch — so the GoRouter is created once.
+  // Watching would rebuild the whole router (resetting to initialLocation: /splash)
+  // every time auth state changes. The refreshListenable still triggers redirect.
+  final notifier = ref.read(_routerNotifierProvider);
 
   return GoRouter(
     initialLocation: AppRoutes.splash,
