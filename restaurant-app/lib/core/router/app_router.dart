@@ -12,6 +12,7 @@ import '../../features/alerts/presentation/pages/alerts_page.dart';
 import '../../features/notifications/presentation/pages/notifications_page.dart';
 import '../../features/inventory/presentation/pages/inventory_page.dart';
 import '../../features/inventory/presentation/pages/products_page.dart';
+import '../../features/inventory/presentation/pages/recipes_page.dart';
 import '../../features/inventory/presentation/pages/stock_count_page.dart';
 import '../../features/inventory/presentation/pages/waste_page.dart';
 import '../../features/orders/presentation/pages/orders_page.dart';
@@ -69,6 +70,7 @@ class AppRoutes {
   static const String payments      = '/payments';
   static const String profit        = '/profit';
   static const String tables        = '/tables';
+  static const String recipes       = '/inventory/recipes';
 }
 
 // Router refreshes when auth state changes
@@ -174,6 +176,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(path: AppRoutes.attendance,   builder: (_, s) => _ComingSoon('Attendance')),
           GoRoute(path: AppRoutes.pos,          builder: (_, s) => _ComingSoon('POS')),
           GoRoute(path: AppRoutes.refunds,      builder: (_, s) => _ComingSoon('Refunds')),
+          GoRoute(path: AppRoutes.recipes,      builder: (_, __) => const RecipesPage()),
           GoRoute(path: AppRoutes.transfers,    builder: (_, s) => _ComingSoon('Transfers')),
           GoRoute(path: AppRoutes.expiry,       builder: (_, s) => _ComingSoon('Expiry')),
           GoRoute(path: AppRoutes.expenses,     builder: (_, s) => _ComingSoon('Expenses')),
