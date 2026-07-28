@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import '../theme/app_colors.dart';
 import '../../l10n/app_l10n.dart';
+import '../providers/settings_provider.dart';
 
 // ── Nav item model ────────────────────────────────────────────────────────────
 class _NavItem {
@@ -187,7 +188,7 @@ class _SideBar extends ConsumerWidget {
               ),
             ),
             const Divider(height: 1),
-            const SizedBox(height: 8),
+            _QuickToggles(),
 
             // Profile & Settings
             _NavTile(
@@ -268,6 +269,90 @@ class _NavTile extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Quick language + theme toggles — sidebar footer
+// ─────────────────────────────────────────────────────────────────────────────
+class _QuickToggles extends ConsumerWidget {
+  const _QuickToggles();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeMode = ref.watch(themeModeProvider);
+    final locale   = ref.watch(localeModeProvider);
+    final cs       = Theme.of(context).colorScheme;
+    final isDark   = Theme.of(context).brightness == Brightness.dark;
+    final pillBg   = isDark
+        ? Colors.white.withOpacity(0.10)
+        : Colors.black.withOpacity(0.06);
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(12, 6, 12, 6),
+      child: Row(
+        children: [
+          Expanded(
+            child: Container(
+              height: 32,
+              decoration: BoxDecoration(
+                color: pillBg,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                children: ['en', 'ar'].map((lang) {
+                  final selected = locale.languageCode == lang;
+                  return Expanded(
+                    child: GestureDetector(
+                      onTap: () =>
+                          ref.read(localeModeProvider.notifier).setLocale(lang),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 180),
+                        decoration: BoxDecoration(
+                          color: selected ? cs.primary : Colors.transparent,
+                          borderRadius: BorderRadius.circular(7),
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          lang == 'en' ? 'EN' : 'ع',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: selected
+                                ? cs.onPrimary
+                                : (isDark ? Colors.white70 : Colors.black54),
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          GestureDetector(
+            onTap: () => ref.read(themeModeProvider.notifier).setTheme(
+                  themeMode == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark,
+                ),
+            child: Container(
+              width: 40,
+              height: 32,
+              decoration: BoxDecoration(
+                color: pillBg,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              alignment: Alignment.center,
+              child: Icon(
+                isDark ? Icons.dark_mode_outlined : Icons.light_mode_outlined,
+                size: 18,
+                color: isDark ? Colors.white70 : Colors.black54,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

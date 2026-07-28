@@ -8,6 +8,7 @@ import '../../features/dashboard/presentation/screens/dashboard_screen.dart';
 import '../../features/restaurants/presentation/screens/restaurants_screen.dart';
 import '../../features/restaurants/presentation/screens/restaurant_detail_screen.dart';
 import '../widgets/main_shell.dart';
+import '../../features/settings/presentation/pages/settings_page.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -68,8 +69,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: '/settings',
-            builder: (context, state) => const _PlaceholderScreen(
-                title: 'Settings', icon: Icons.settings),
+            builder: (context, state) => const SettingsPage(),
           ),
         ],
       ),
