@@ -26,13 +26,20 @@ Every app follows the same architecture:
 
 The **Restaurant Copilot** workflow builds and serves the restaurant app on port 5000:
 ```
-cd restaurant-app && flutter pub get && flutter build web --release --no-pub && python3 spa_server.py 5000 build/web
+cd restaurant-app && flutter pub get && flutter build web --release --no-pub --pwa-strategy=none && python3 spa_server.py 5000 build/web
 ```
 
-To build any other app, run in its directory:
+**Important:** Always use `--pwa-strategy=none` for all apps. Replit's preview runs over HTTP
+in an iframe; Flutter's service worker requires HTTPS and causes a blank screen when omitted.
+Each app's `web/index.html` also unregisters any stale service workers on load to prevent
+cross-app cache contamination when switching apps on the same port.
+
+To build and serve any other app (change the workflow command or run manually):
 ```
-cd <app-dir> && flutter pub get && flutter build web --release --no-pub
+cd <app-dir> && flutter pub get && flutter build web --release --no-pub --pwa-strategy=none && python3 spa_server.py 5000 build/web
 ```
+
+All four apps have `spa_server.py` (SPA-aware server with no-cache headers).
 
 After code changes, restart the workflow to rebuild and re-serve.
 

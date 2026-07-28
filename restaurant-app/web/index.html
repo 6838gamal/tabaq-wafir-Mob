@@ -9,7 +9,7 @@
   <meta name="description" content="Restaurant Copilot — Restaurant Operating Intelligence">
   <meta name="theme-color" content="#1E5EF3">
 
-  <!-- No-cache for development: prevent stale service-worker lock-out -->
+  <!-- No-cache: always fetch fresh assets -->
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma"        content="no-cache">
   <meta http-equiv="Expires"       content="0">
@@ -30,34 +30,18 @@
 </head>
 <body>
   <!--
-    Force any stale service worker to activate immediately so rebuilt assets
-    are always served. This runs before flutter_bootstrap.js registers a new SW.
+    Unregister any stale service workers from previous app builds / app switches.
+    Build uses --pwa-strategy=none so no new SW is registered; this cleans up old ones.
   -->
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.getRegistrations().then(function(regs) {
-        // If cached SW version doesn't match the build stamp in the URL,
-        // unregister all and reload once so the fresh SW is installed.
-        var stamp = '${serviceWorkerVersion}';
-        var stored = sessionStorage.getItem('sw_stamp');
-        if (stored && stored !== stamp) {
-          sessionStorage.setItem('sw_stamp', stamp);
-          Promise.all(regs.map(function(r){ return r.unregister(); }))
-            .then(function(){ location.reload(); });
-        } else {
-          sessionStorage.setItem('sw_stamp', stamp);
-          // Tell active SW to skip waiting and take control immediately
-          regs.forEach(function(r){
-            if (r.waiting) r.waiting.postMessage({type: 'SKIP_WAITING'});
-          });
-        }
+        regs.forEach(function(r) { r.unregister(); });
       });
-      // React to a new SW taking control — reload to get fresh assets
-      navigator.serviceWorker.addEventListener('controllerchange', function() {
-        if (!sessionStorage.getItem('sw_reloaded')) {
-          sessionStorage.setItem('sw_reloaded', '1');
-          location.reload();
-        }
+    }
+    if ('caches' in window) {
+      caches.keys().then(function(keys) {
+        keys.forEach(function(k) { caches.delete(k); });
       });
     }
   </script>
